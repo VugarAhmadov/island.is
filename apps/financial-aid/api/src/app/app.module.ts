@@ -12,6 +12,7 @@ import {
   FileModule,
   ApplicationEventModule,
 } from './modules/'
+import { NationalRegistryXRoadModule } from '@island.is/api/domains/national-registry-x-road'
 
 const debug = !environment.production
 const playground = debug || process.env.GQL_PLAYGROUND_ENABLED === 'true'
@@ -39,6 +40,13 @@ const autoSchemaFile = environment.production
     MunicipalityModule,
     FileModule,
     ApplicationEventModule,
+    NationalRegistryXRoadModule.register({
+      xRoadBasePathWithEnv: environment.nationalRegistryXRoad.url || '',
+      xRoadTjodskraMemberCode:
+        environment.nationalRegistryXRoad.memberCode || '',
+      xRoadTjodskraApiPath: environment.nationalRegistryXRoad.apiPath || '',
+      xRoadClientId: environment.nationalRegistryXRoad.clientId || '',
+    }),
   ],
   providers: [BackendAPI],
 })

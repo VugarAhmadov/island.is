@@ -3,11 +3,13 @@ import { ApolloError } from 'apollo-server-express'
 import {
   Einstaklingsupplysingar,
   Fjolskylda,
+  Hjuskapur,
 } from '@island.is/clients/national-registry-v2'
 import type { NationalRegistryXRoadConfig } from './nationalRegistryXRoad.module'
 import { NationalRegistryPerson } from '../models/nationalRegistryPerson.model'
 import type { Logger } from '@island.is/logging'
 import { LOGGER_PROVIDER } from '@island.is/logging'
+import { NationalRegistrySpouse } from '../models/nationalRegistrySpouse.model'
 
 @Injectable()
 export class NationalRegistryXRoadService {
@@ -62,6 +64,21 @@ export class NationalRegistryXRoadService {
         postalCode: person.logheimili?.postnumer || undefined,
         city: person.logheimili?.stadur || undefined,
       },
+    }
+  }
+
+  async getSpouse(
+    nationalId: string,
+    authToken: string,
+  ): Promise<NationalRegistrySpouse> {
+    const spouse = await this.nationalRegistryFetch<Hjuskapur>(
+      `/${nationalId}/hjuskapur`,
+      authToken,
+    )
+    return {
+      nationalId: spouse.kennitalaMaka || undefined,
+      name: spouse.nafnMaka || undefined,
+      maritalStatus: spouse.hjuskaparkodi || undefined,
     }
   }
 

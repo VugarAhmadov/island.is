@@ -62,3 +62,22 @@ export const CurrentUserQuery = gql`
     }
   }
 `
+
+export const getNationalRegistryUserQuery = gql`
+  query getNationalRegistryUserQuery {
+    nationalRegistryUserV2 {
+      nationalId
+      fullName
+      address {
+        streetName
+        postalCode
+        city
+      }
+      spouse {
+        nationalId
+        martialStatus
+        name
+      }
+    }
+  }
+`
