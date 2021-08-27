@@ -75,7 +75,7 @@ export const getNationalRegistryUserQuery = gql`
       }
       spouse {
         nationalId
-        martialStatus
+        maritalStatus
         name
       }
     }

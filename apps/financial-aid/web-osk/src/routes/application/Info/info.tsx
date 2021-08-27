@@ -16,6 +16,8 @@ import { NavigationProps } from '@island.is/financial-aid/shared'
 import { UserContext } from '@island.is/financial-aid-web/osk/src/components/UserProvider/UserProvider'
 
 import { useLogOut } from '@island.is/financial-aid-web/osk/src/utils/useLogOut'
+import { nationalRegistryUserQuery } from '@island.is/financial-aid-web/osk/graphql/sharedGql'
+import { useQuery } from '@apollo/client'
 
 const ApplicationInfo = () => {
   const router = useRouter()
@@ -29,6 +31,10 @@ const ApplicationInfo = () => {
   const navigation: NavigationProps = useFormNavigation(
     router.pathname,
   ) as NavigationProps
+
+  const { data, loading } = useQuery(nationalRegistryUserQuery, {
+    fetchPolicy: 'no-cache',
+  })
 
   const errorCheck = () => {
     if (!accept) {
