@@ -63,6 +63,7 @@ export class NationalRegistryXRoadService {
         streetName: person.logheimili?.heiti || undefined,
         postalCode: person.logheimili?.postnumer || undefined,
         city: person.logheimili?.stadur || undefined,
+        municipalityCode: person.logheimili?.sveitarfelagsnumer || undefined,
       },
     }
   }

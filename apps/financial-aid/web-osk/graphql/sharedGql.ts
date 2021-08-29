@@ -72,6 +72,7 @@ export const getNationalRegistryUserQuery = gql`
         streetName
         postalCode
         city
+        municipalityCode
       }
       spouse {
         nationalId
