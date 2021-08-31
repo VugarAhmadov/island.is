@@ -1,13 +1,12 @@
 import {
-  ApplicationTemplate,
-  ApplicationTypes,
+  Application,
+  ApplicationConfigurations,
   ApplicationContext,
   ApplicationRole,
   ApplicationStateSchema,
-  Application,
+  ApplicationTemplate,
+  ApplicationTypes,
   DefaultEvents,
-  DefaultStateLifeCycle,
-  ApplicationConfigurations,
 } from '@island.is/application/core'
 import { PublicDebtPaymentPlanSchema } from './dataSchema'
 import { application } from './messages'
@@ -48,7 +47,11 @@ const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
             description: application.description,
           },
           progress: 0.5,
-          lifecycle: DefaultStateLifeCycle,
+          lifecycle: {
+            shouldBeListed: true,
+            shouldBePruned: true, // Only on dev
+            whenToPrune: 12 * 3600 * 1000,
+          },
           roles: [
             {
               id: Roles.APPLICANT,
@@ -77,8 +80,12 @@ const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
             description: application.description,
           },
           progress: 1,
-          lifecycle: DefaultStateLifeCycle,
-          roles: [
+          lifecycle: {
+            shouldBeListed: true,
+            shouldBePruned: true, // Only on dev
+            whenToPrune: 12 * 3600 * 1000,
+          },
+          /* roles: [
             {
               id: Roles.APPLICANT,
               formLoader: () =>
@@ -88,7 +95,7 @@ const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
                 ),
               write: 'all',
             },
-          ],
+          ], */
         },
       },
     },
