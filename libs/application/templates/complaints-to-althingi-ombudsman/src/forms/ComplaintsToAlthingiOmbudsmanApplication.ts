@@ -305,6 +305,7 @@ export const ComplaintsToAlthingiOmbudsmanApplication: Form = buildForm({
               title: '',
               introduction: '',
               uploadHeader: attachments.uploadHeader,
+              uploadDescription: attachments.uploadDescription,
               uploadButtonLabel: attachments.uploadButtonLabel,
             }),
           ],
@@ -490,7 +491,6 @@ export const ComplaintsToAlthingiOmbudsmanApplication: Form = buildForm({
         buildMultiField({
           id: 'courtAction.question',
           title: courtAction.title,
-          description: courtAction.description,
           children: [
             buildRadioField({
               id: 'courtActionAnswer',
@@ -500,6 +500,13 @@ export const ComplaintsToAlthingiOmbudsmanApplication: Form = buildForm({
                 { value: YES, label: shared.general.yes },
                 { value: NO, label: shared.general.no },
               ],
+            }),
+            buildCustomField({
+              id: 'courtAction.alert',
+              title: courtAction.alertTitle,
+              description: courtAction.alertText,
+              component: 'FieldAlertMessage',
+              condition: (answers) => answers.courtActionAnswer === YES,
             }),
           ],
         }),
@@ -514,6 +521,7 @@ export const ComplaintsToAlthingiOmbudsmanApplication: Form = buildForm({
           title: attachments.title,
           introduction: attachments.introduction,
           uploadHeader: attachments.uploadHeader,
+          uploadDescription: attachments.uploadDescription,
           uploadButtonLabel: attachments.uploadButtonLabel,
         }),
       ],
@@ -522,11 +530,14 @@ export const ComplaintsToAlthingiOmbudsmanApplication: Form = buildForm({
       id: 'section.overview',
       title: section.complaintOverview,
       children: [
-        buildCustomField({
-          id: 'overview',
-          title: 'Kvörtun og undirritun',
-          component: 'ComplaintOverview',
-        }),
+        buildCustomField(
+          {
+            id: 'overview',
+            title: 'Kvörtun og undirritun',
+            component: 'ComplaintOverview',
+          },
+          { isEditable: true },
+        ),
       ],
     }),
     buildSection({
