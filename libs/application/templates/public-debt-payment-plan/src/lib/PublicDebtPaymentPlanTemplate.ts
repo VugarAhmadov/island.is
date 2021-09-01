@@ -8,6 +8,7 @@ import {
   ApplicationTypes,
   DefaultEvents,
 } from '@island.is/application/core'
+import { ApiActions } from '../shared/constants'
 import { PublicDebtPaymentPlanSchema } from './dataSchema'
 import { application } from './messages'
 
@@ -84,6 +85,9 @@ const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
             shouldBeListed: true,
             shouldBePruned: true, // Only on dev
             whenToPrune: 12 * 3600 * 1000,
+          },
+          onEntry: {
+            apiModuleAction: ApiActions.submitApplication,
           },
           /* roles: [
             {
