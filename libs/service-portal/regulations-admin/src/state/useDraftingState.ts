@@ -1,32 +1,43 @@
-import { useQuery } from '@apollo/client'
-import { HTMLText, PlainText, RegName } from '@island.is/regulations'
-import { Query } from '@island.is/api/schema'
-import { AuthContextType, useAuth } from '@island.is/auth/react'
+import { useMutation, gql } from '@apollo/client'
+import { HTMLText, LawChapterSlug, PlainText } from '@island.is/regulations'
+import { useRegulationDraftQuery } from '@island.is/service-portal/graphql'
+import { useAuth } from '@island.is/auth/react'
 import { ServicePortalPath } from '@island.is/service-portal/core'
-import { Reducer, useEffect, useReducer } from 'react'
+import { FC, Reducer, useEffect, useMemo, useReducer } from 'react'
 import { produce, setAutoFreeze } from 'immer'
 import { useHistory, generatePath } from 'react-router-dom'
-import { DraftingStatus, RegulationType, Step } from '../types'
+import { Step } from '../types'
+import { getAllGuessableValues, getInputFieldsWithErrors } from '../utils'
+import { mockSave } from '../_mockData'
+import { RegulationsAdminScope } from '@island.is/auth/scopes'
 import {
   RegulationDraft,
-  DraftRegulationCancel,
-  DraftRegulationChange,
-} from '../types-api'
-import {
-  AuthorId,
-  LawChapterId,
-  MinistryId,
   RegulationDraftId,
-} from '../types-database'
-import { mockDraftRegulations, useMockQuery, mockSave } from '../_mockData'
-import { RegulationsAdminScope } from '@island.is/auth/scopes'
+} from '@island.is/regulations/admin'
+import {
+  DraftIdFromParam,
+  StepNav,
+  DraftField,
+  HtmlDraftField,
+  RegDraftForm,
+  DraftingState,
+  RegDraftFormSimpleProps,
+  Action,
+  ActionName,
+} from './types'
+import { uuid } from 'uuidv4'
 
-export type DraftIdFromParam = 'new' | RegulationDraftId
+export const CREATE_DRAFT_REGULATION_MUTATION = gql`
+  mutation CreateDraftRegulationMutation($input: CreateDraftRegulationInput!) {
+    createDraftRegulation(input: $input)
+  }
+`
 
-export type StepNav = {
-  prev?: Step
-  next?: Step
-}
+export const UPDATE_DRAFT_REGULATION_MUTATION = gql`
+  mutation UpdateDraftRegulationMutation($input: EditDraftRegulationInput!) {
+    updateDraftRegulationById(input: $input)
+  }
+`
 
 export const steps: Record<Step, StepNav> = {
   basics: {
@@ -47,68 +58,6 @@ export const steps: Record<Step, StepNav> = {
 
 // ---------------------------------------------------------------------------
 
-type DraftFieldExtras = {
-  min: Date
-  max: Date
-}
-
-type DraftField<Type, Extras extends keyof DraftFieldExtras = never> = {
-  value: Type
-  dirty?: boolean
-  error?: string
-} & Pick<DraftFieldExtras, Extras>
-
-// TODO: Figure out how the Editor components lazy valueRef.current() getter fits into this
-type HtmlDraftField = DraftField<HTMLText>
-
-type BodyDraftFields = {
-  title: DraftField<PlainText>
-  text: HtmlDraftField
-  appendixes: ReadonlyArray<{
-    title: DraftField<PlainText>
-    text: HtmlDraftField
-  }>
-  comments: HtmlDraftField
-}
-
-type ChangeDraftFields = Readonly<
-  // always prefilled on "create" - non-editable
-  Pick<DraftRegulationChange, 'id' | 'type' | 'name'>
-> & { date: DraftField<Date> } & BodyDraftFields
-
-type CancelDraftFields = Readonly<
-  // always prefilled on "create" - non-editable
-  Pick<DraftRegulationCancel, 'id' | 'type' | 'name'>
-> & { date: DraftField<Date> }
-
-export type RegDraftForm = BodyDraftFields & {
-  idealPublishDate: DraftField<Date | undefined>
-  signatureDate: DraftField<Date | undefined>
-  effectiveDate: DraftField<Date | undefined>
-  lawChapters: DraftField<ReadonlyArray<LawChapterId>>
-  ministry: DraftField<MinistryId | undefined>
-  type: DraftField<RegulationType | undefined>
-
-  impacts: ReadonlyArray<ChangeDraftFields | CancelDraftFields>
-
-  readonly draftingStatus: DraftingStatus // non-editable except via saveStatus or propose actions
-  draftingNotes: HtmlDraftField
-  authors: DraftField<ReadonlyArray<AuthorId>>
-
-  id: RegulationDraft['id']
-}
-
-export type DraftingState = {
-  isEditor: boolean
-  stepName: Step
-  savingStatus?: boolean
-  loading?: boolean
-  error?: Error
-  draft?: RegDraftForm
-}
-
-// ---------------------------------------------------------------------------
-
 const makeDraftForm = (
   draft: RegulationDraft,
   dirty?: boolean,
@@ -120,7 +69,7 @@ const makeDraftForm = (
     id: draft.id,
     title: f(draft.title),
     text: fHtml(draft.text),
-    appendixes: draft.appendixes.map((appendix) => ({
+    appendixes: draft.appendixes?.map((appendix) => ({
       title: f(appendix.title),
       text: fHtml(appendix.text),
     })),
@@ -129,14 +78,16 @@ const makeDraftForm = (
     idealPublishDate: f(
       draft.idealPublishDate && new Date(draft.idealPublishDate),
     ),
+    fastTrack: draft.fastTrack,
+
     signatureDate: f(draft.signatureDate && new Date(draft.signatureDate)),
     effectiveDate: f(draft.effectiveDate && new Date(draft.effectiveDate)),
 
-    lawChapters: f(draft.lawChapters.map((chapter) => chapter.id)),
-    ministry: f(draft.ministry?.id),
+    lawChapters: f(draft.lawChapters?.map((chapter) => chapter.slug)),
+    ministry: f(draft.ministry?.slug),
     type: f(draft.type),
 
-    impacts: draft.impacts.map((impact) =>
+    impacts: draft.impacts?.map((impact) =>
       impact.type === 'amend'
         ? {
             id: impact.id,
@@ -163,13 +114,13 @@ const makeDraftForm = (
 
     draftingNotes: fHtml(draft.draftingNotes),
     draftingStatus: draft.draftingStatus,
-    authors: f(draft.authors.map((author) => author.authorId)),
+    authors: f(draft.authors?.map((author) => author.authorId)),
   }
   return form
 }
 
 const getEmptyDraft = (): RegulationDraft => ({
-  id: 0,
+  id: 'new' as RegulationDraftId,
   draftingStatus: 'draft',
   draftingNotes: '' as HTMLText,
   authors: [],
@@ -195,27 +146,6 @@ const getEmptyDraft = (): RegulationDraft => ({
 // ) => {
 //   return
 // }
-
-// ---------------------------------------------------------------------------
-
-// type NameValuePair<O extends Record<string, any>> = {
-//   [Key in keyof O]: {
-//     name: Key
-//     value: O[Key]
-//   }
-// }[keyof O]
-
-type Action =
-  | { type: 'CHANGE_STEP'; stepName: Step }
-  | { type: 'LOADING_DRAFT' }
-  | { type: 'LOADING_DRAFT_SUCCESS'; draft: RegulationDraft }
-  | { type: 'LOADING_DRAFT_ERROR'; error: Error }
-  | { type: 'SAVING_STATUS' }
-  | { type: 'SAVING_STATUS_DONE'; error?: Error }
-  // | ({ type: 'UPDATE_PROP' } & NameValuePair<Reg>)
-  | { type: 'SHIP' }
-
-type ActionName = Action['type']
 
 // ---------------------------------------------------------------------------
 
@@ -256,12 +186,42 @@ const actionHandlers: {
     state.savingStatus = false
   },
 
-  // UPDATE_PROP: (state, { name, value }) => {
-  //   if (!state.draft) {
-  //     return
-  //   }
-  //   state.draft[name].value = value
-  // },
+  UPDATE_PROP: (state, { name, value }) => {
+    if (!state.draft) {
+      return
+    }
+    const prop = state.draft[name]
+    // @ts-expect-error  (FML! type matching of name and value is guaranteed, but TS can't tell)
+    prop.value = value
+    prop.error = !prop.value ? 'empty' : undefined
+  },
+
+  UPDATE_MULTIPLE_PROPS: (state, { multiData }) => {
+    if (!state.draft) {
+      return
+    }
+
+    state.draft = {
+      ...state.draft,
+      ...multiData,
+    }
+  },
+
+  UPDATE_LAWCHAPTER_PROP: (state, { action, value }) => {
+    if (!state.draft) {
+      return
+    }
+    const prop = state.draft.lawChapters
+    if (prop.value && value) {
+      let newLawChapterArray = [...prop.value]
+      if (action === 'add') {
+        newLawChapterArray.push(value)
+      } else {
+        newLawChapterArray = newLawChapterArray.filter((item) => item !== value)
+      }
+      prop.value = newLawChapterArray
+    }
+  },
 
   SHIP: (state) => {
     if (!state.isEditor) {
@@ -319,7 +279,6 @@ export const useDraftingState = (draftId: DraftIdFromParam, stepName: Step) => {
   const isEditor =
     useAuth().userInfo?.scopes?.includes(RegulationsAdminScope.manage) || false
 
-  const isNew = draftId === 'new'
   if (stepName === 'review' && !isEditor) {
     throw new Error()
   }
@@ -330,18 +289,11 @@ export const useDraftingState = (draftId: DraftIdFromParam, stepName: Step) => {
     getInitialState,
   )
 
-  const res = useMockQuery(
-    draftId !== 'new' &&
-      !state.error && { regulationDraft: mockDraftRegulations[draftId] },
-    isNew,
+  const isNew = draftId === 'new'
+  const { draft, loading, error } = useRegulationDraftQuery(
+    isNew && !state.error,
+    draftId,
   )
-  // const res = useQuery<Query>(RegulationDraftQuery, {
-  //   variables: { id: draftId },
-  //   skip: isNew && !state.error,
-  // })
-  const { loading, error } = res
-
-  const draft = res.data ? res.data.regulationDraft : undefined
 
   useEffect(() => {
     dispatch({ type: 'CHANGE_STEP', stepName })
@@ -358,51 +310,194 @@ export const useDraftingState = (draftId: DraftIdFromParam, stepName: Step) => {
     }
   }, [loading, error, draft])
 
+  const [createDraftRegulation] = useMutation(CREATE_DRAFT_REGULATION_MUTATION)
+  const [updateDraftRegulationById] = useMutation(
+    UPDATE_DRAFT_REGULATION_MUTATION,
+  )
+
   const stepNav = steps[stepName]
 
-  const actions = {
-    // updateProp: (name: keyof ) => {
+  console.log('state', state)
+  const actions = useMemo(() => {
+    const isNew = draftId === 'new'
 
-    // }
+    return {
+      goBack:
+        (draft || isNew) && stepNav.prev
+          ? () => {
+              history.replace(
+                generatePath(ServicePortalPath.RegulationsAdminEdit, {
+                  id: draftId,
+                  step: stepNav.prev,
+                }),
+              )
+            }
+          : undefined,
+      goForward:
+        (draft || isNew) &&
+        stepNav.next &&
+        (isEditor || stepNav.next !== 'review')
+          ? () => {
+              // BASICS
+              if (stepName === 'basics') {
+                const basicsRequired = [
+                  'title',
+                  'text',
+                  'idealPublishDate',
+                ] as RegDraftFormSimpleProps[]
 
-    goBack:
-      draft && stepNav.prev
+                const errorFields = getInputFieldsWithErrors(
+                  basicsRequired,
+                  state.draft,
+                )
+
+                if (errorFields) {
+                  dispatch({
+                    type: 'UPDATE_MULTIPLE_PROPS',
+                    multiData: errorFields,
+                  })
+                  return // Prevent the user going forward
+                } else {
+                  const guessableValues = getAllGuessableValues(
+                    state.draft?.text.value as HTMLText,
+                    state.draft?.title.value as PlainText,
+                  )
+                  dispatch({
+                    type: 'UPDATE_MULTIPLE_PROPS',
+                    multiData: guessableValues,
+                  })
+                }
+              }
+
+              // META
+              if (stepName === 'meta') {
+                const metaRequired = [
+                  'ministry',
+                  'type',
+                  'signatureDate',
+                  'effectiveDate',
+                ] as RegDraftFormSimpleProps[]
+
+                const errorFields = getInputFieldsWithErrors(
+                  metaRequired,
+                  state.draft,
+                )
+
+                if (errorFields) {
+                  dispatch({
+                    type: 'UPDATE_MULTIPLE_PROPS',
+                    multiData: errorFields,
+                  })
+                  return // Prevent the user going forward
+                }
+              }
+
+              history.replace(
+                generatePath(ServicePortalPath.RegulationsAdminEdit, {
+                  id: draftId,
+                  step: stepNav.next,
+                }),
+              )
+            }
+          : undefined,
+      saveStatus: draft
         ? () => {
-            history.replace(
-              generatePath(ServicePortalPath.RegulationsAdminEdit, {
-                id: draftId,
-                step: stepNav.prev,
-              }),
-            )
-          }
-        : undefined,
-    goForward:
-      draft && stepNav.next && (isEditor || stepNav.next !== 'review')
-        ? () => {
-            history.replace(
-              generatePath(ServicePortalPath.RegulationsAdminEdit, {
-                id: draftId,
-                step: stepNav.next,
-              }),
-            )
-          }
-        : undefined,
-    saveStatus: draft
-      ? () => {
-          mockSave(draft).then(() => {
-            history.push(ServicePortalPath.RegulationsAdminRoot)
-          })
-        }
-      : () => undefined,
-    propose:
-      draft && !isEditor
-        ? () => {
-            mockSave({ ...draft, draftingStatus: 'proposal' }).then(() => {
+            mockSave(draft).then(() => {
+              console.log('draft saveStatus', state)
               history.push(ServicePortalPath.RegulationsAdminRoot)
             })
           }
-        : undefined,
-  }
+        : () => undefined,
+      // FIXME: rename to updateProp??
+      updateState: <Prop extends RegDraftFormSimpleProps>(data: {
+        name: Prop
+        value: RegDraftForm[Prop]['value']
+      }) => {
+        // @ts-expect-error  (FML! FIXME: make this nicer)
+        dispatch({ type: 'UPDATE_PROP', ...data })
+      },
+      updateLawChapterProp: (data: {
+        action: 'add' | 'delete'
+        value: LawChapterSlug | undefined
+      }) => {
+        dispatch({ type: 'UPDATE_LAWCHAPTER_PROP', ...data })
+      },
+      createDraft:
+        isNew && state.draft
+          ? () => {
+              createDraftRegulation({
+                variables: {
+                  input: {
+                    id: uuid(),
+                    drafting_status: 'draft',
+                    title: state.draft?.title.value,
+                    text: state.draft?.text.value, // (text + appendix + comments)
+                    drafting_notes: state.draft?.draftingNotes.value,
+                    ministry_id: state.draft?.ministry.value || '',
+                    ideal_publish_date: state.draft?.idealPublishDate.value,
+                    type: 'base', // Ritill
+                  },
+                },
+              }).then((res) => {
+                const newDraft = res.data
+                  ? (res.data.createDraftRegulation as RegulationDraft)
+                  : undefined
+                if (newDraft?.id) {
+                  history.replace(
+                    generatePath(ServicePortalPath.RegulationsAdminEdit, {
+                      id: newDraft?.id,
+                      step: stepNav.next,
+                    }),
+                  )
+                }
+              })
+            }
+          : () => undefined,
+      updateDraft: state.draft
+        ? () => {
+            updateDraftRegulationById({
+              variables: {
+                input: {
+                  id: state.draft?.id,
+                  body: {
+                    title: state.draft?.title?.value,
+                    text: state.draft?.text?.value, // (text + appendix + comments)
+                    ministry_id: state.draft?.ministry?.value,
+                    drafting_notes: state.draft?.draftingNotes.value,
+                    ideal_publish_date: state.draft?.idealPublishDate?.value,
+                    law_chapters: state.draft?.lawChapters?.value,
+                    signature_date: state.draft?.signatureDate?.value,
+                    effective_date: state.draft?.effectiveDate?.value,
+                    type: state.draft?.type?.value,
+                  },
+                },
+              },
+            }).then((res) => {
+              console.log('!!DRAFT UPDATED!! ', res)
+            })
+          }
+        : () => undefined,
+      propose:
+        draft && !isEditor
+          ? () => {
+              mockSave({ ...draft, draftingStatus: 'proposal' }).then(() => {
+                history.push(ServicePortalPath.RegulationsAdminRoot)
+              })
+            }
+          : undefined,
+    }
+  }, [
+    stepNav,
+    // TODO: Review the use of draft here, and remove if possible.
+    draft,
+    isEditor,
+    state,
+    draftId,
+
+    history, // NOTE: Should be immutable
+    createDraftRegulation, // NOTE: Should be immutable
+    updateDraftRegulationById, // NOTE: Should be immutable
+  ])
 
   return {
     state,
@@ -410,3 +505,11 @@ export const useDraftingState = (draftId: DraftIdFromParam, stepName: Step) => {
     actions,
   }
 }
+
+// ===========================================================================
+
+export type StepComponent = (props: {
+  draft: RegDraftForm
+  new?: boolean
+  actions: ReturnType<typeof useDraftingState>['actions'] // FIXME: Ick! Ack!
+}) => ReturnType<FC>

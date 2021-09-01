@@ -5,7 +5,7 @@ import responseCachePlugin from 'apollo-server-plugin-response-cache'
 
 import { AuthModule as AuthDomainModule } from '@island.is/api/domains/auth'
 import { ContentSearchModule } from '@island.is/api/domains/content-search'
-import { CmsModule } from '@island.is/api/domains/cms'
+import { CmsModule } from '@island.is/cms'
 import { DrivingLicenseModule } from '@island.is/api/domains/driving-license'
 import { EducationModule } from '@island.is/api/domains/education'
 import { ApplicationModule } from '@island.is/api/domains/application'
@@ -13,7 +13,7 @@ import { DirectorateOfLabourModule } from '@island.is/api/domains/directorate-of
 import { FileUploadModule } from '@island.is/api/domains/file-upload'
 import { DocumentModule } from '@island.is/api/domains/documents'
 import { CommunicationsModule } from '@island.is/api/domains/communications'
-import { TranslationsModule } from '@island.is/api/domains/translations'
+import { CmsTranslationsModule } from '@island.is/cms-translations'
 import { UserProfileModule } from '@island.is/api/domains/user-profile'
 import { NationalRegistryModule } from '@island.is/api/domains/national-registry'
 import { HealthInsuranceModule } from '@island.is/api/domains/health-insurance'
@@ -27,6 +27,7 @@ import { SyslumennModule } from '@island.is/api/domains/syslumenn'
 import { RSKModule } from '@island.is/api/domains/rsk'
 import { IcelandicNamesModule } from '@island.is/api/domains/icelandic-names-registry'
 import { RegulationsModule } from '@island.is/api/domains/regulations'
+import { RegulationsAdminModule } from '@island.is/api/domains/regulations-admin'
 import { FinanceModule } from '@island.is/api/domains/finance'
 import { EndorsementSystemModule } from '@island.is/api/domains/endorsement-system'
 import { NationalRegistryXRoadModule } from '@island.is/api/domains/national-registry-x-road'
@@ -35,6 +36,7 @@ import { TemporaryVoterRegistryModule } from '@island.is/api/domains/temporary-v
 import { PartyLetterRegistryModule } from '@island.is/api/domains/party-letter-registry'
 import { LicenseServiceModule } from '@island.is/api/domains/license-service'
 import { AuditModule } from '@island.is/nest/audit'
+import { PaymentScheduleModule } from '@island.is/api/domains/payment-schedule'
 
 import { maskOutFieldsMiddleware } from './graphql.middleware'
 
@@ -70,11 +72,11 @@ const autoSchemaFile = environment.production
     }),
     AuthDomainModule.register({
       identity: {
-        nationalRegistry: {
-          baseSoapUrl: environment.nationalRegistry.baseSoapUrl,
-          user: environment.nationalRegistry.user,
-          password: environment.nationalRegistry.password,
-          host: environment.nationalRegistry.host,
+        nationalRegistryXRoad: {
+          xRoadBasePathWithEnv: environment.nationalRegistryXRoad.url,
+          xRoadTjodskraMemberCode: environment.nationalRegistryXRoad.memberCode,
+          xRoadTjodskraApiPath: environment.nationalRegistryXRoad.apiPath,
+          xRoadClientId: environment.nationalRegistryXRoad.clientId,
         },
       },
       authPublicApi: environment.authPublicApi,
@@ -86,6 +88,7 @@ const autoSchemaFile = environment.production
       xroadBaseUrl: environment.xroad.baseUrl,
       xroadClientId: environment.xroad.clientId,
       secret: environment.drivingLicense.secret,
+      xroadPath: environment.drivingLicense.xroadPath,
     }),
     EducationModule.register({
       xroad: {
@@ -138,7 +141,7 @@ const autoSchemaFile = environment.production
       documentProviderAdmins:
         environment.documentProviderService.documentProviderAdmins,
     }),
-    TranslationsModule,
+    CmsTranslationsModule,
     TerminusModule,
     NationalRegistryModule.register({
       nationalRegistry: {
@@ -163,11 +166,11 @@ const autoSchemaFile = environment.production
     CommunicationsModule,
     ApiCatalogueModule,
     IdentityModule.register({
-      nationalRegistry: {
-        baseSoapUrl: environment.nationalRegistry.baseSoapUrl,
-        user: environment.nationalRegistry.user,
-        password: environment.nationalRegistry.password,
-        host: environment.nationalRegistry.host,
+      nationalRegistryXRoad: {
+        xRoadBasePathWithEnv: environment.nationalRegistryXRoad.url,
+        xRoadTjodskraMemberCode: environment.nationalRegistryXRoad.memberCode,
+        xRoadTjodskraApiPath: environment.nationalRegistryXRoad.apiPath,
+        xRoadClientId: environment.nationalRegistryXRoad.clientId,
       },
     }),
     AuthModule.register(environment.auth),
@@ -192,6 +195,16 @@ const autoSchemaFile = environment.production
     }),
     RegulationsModule.register({
       url: environment.regulationsDomain.url,
+    }),
+    RegulationsAdminModule.register({
+      baseApiUrl: environment.regulationsAdmin.baseApiUrl,
+      regulationsApiUrl: environment.regulationsAdmin.regulationsApiUrl,
+      nationalRegistryXRoad: {
+        xRoadBasePathWithEnv: environment.nationalRegistryXRoad.url,
+        xRoadTjodskraMemberCode: environment.nationalRegistryXRoad.memberCode,
+        xRoadTjodskraApiPath: environment.nationalRegistryXRoad.apiPath,
+        xRoadClientId: environment.nationalRegistryXRoad.clientId,
+      },
     }),
     FinanceModule.register({
       username: environment.fjarmalDomain.username,
@@ -233,6 +246,13 @@ const autoSchemaFile = environment.production
         apiUrl: environment.pkpass.apiUrl,
         secretKey: environment.pkpass.secretKey,
       },
+    }),
+    PaymentScheduleModule.register({
+      xRoadProviderId: environment.paymentSchedule.xRoadProviderId,
+      xRoadBaseUrl: environment.paymentSchedule.xRoadBaseUrl,
+      xRoadClientId: environment.xroad.clientId,
+      password: environment.paymentSchedule.password,
+      username: environment.paymentSchedule.username,
     }),
   ],
 })

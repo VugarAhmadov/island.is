@@ -1,5 +1,5 @@
 import { defineMessages, MessageDescriptor } from 'react-intl'
-import { DraftingStatus } from './types'
+import { DraftingStatus } from '@island.is/regulations/admin'
 
 export const editorMsgs = defineMessages({
   step1Headline: {
@@ -118,10 +118,22 @@ export const editorMsgs = defineMessages({
     id: 'ap.regulations-admin:draft-otps-idealpublishdate-fasttrack',
     defaultMessage: '(hraðbirting)',
   },
+  applyForFastTrack: {
+    id: 'ap.regulations-admin:apply-for-fasttrack',
+    defaultMessage: 'Sækja um flýtimeðferð',
+  },
 
   ministry: {
     id: 'ap.regulations-admin:draft-labels-ministry',
     defaultMessage: 'Ráðuneyti',
+  },
+  chooseMinistry: {
+    id: 'ap.regulations-admin:draft-labels-choose-ministry',
+    defaultMessage: 'Veldu ráðuneyti',
+  },
+  legacyMinistry: {
+    id: 'ap.regulations-admin:draft-labels-legacy-ministry',
+    defaultMessage: '(fyrrverandi ráðuneyti)',
   },
 
   lawChapter: {
@@ -215,6 +227,10 @@ export const editorMsgs = defineMessages({
     id: 'ap.regulations-admin:draft-legend-changedtitle',
     defaultMessage: 'Uppfærður texti reglugerðar',
   },
+  requiredFieldError: {
+    id: 'ap.regulations-admin:required-field-missing-error',
+    defaultMessage: 'Þessi reitur má ekki vera tómur',
+  },
 })
 
 export const warningMessages = defineMessages({
@@ -242,6 +258,10 @@ export const homeMessages = defineMessages({
   shippedTitle: {
     id: 'ap.regulations-admin:shipped-title',
     defaultMessage: 'Bíður formlegrar birtingar',
+  },
+  createRegulation: {
+    id: 'ap.regulations-admin:create-regulation-cta',
+    defaultMessage: 'Skrá nýja reglugerð',
   },
 
   cta: {
@@ -314,5 +334,9 @@ export const buttonsMsgs = defineMessages({
   publish: {
     id: 'ap.regulations-admin:btn-publish',
     defaultMessage: 'Senda til útgáfu í stjórnartíðindum',
+  },
+  delete: {
+    id: 'ap.regulations-admin:btn-delete',
+    defaultMessage: 'Eyða færslu',
   },
 })

@@ -1,24 +1,22 @@
-import { HTMLText, RegName, toISODate } from '@island.is/regulations'
+import {
+  HTMLText,
+  RegName,
+  toISODate,
+  MinistrySlug,
+  Kennitala,
+} from '@island.is/regulations'
+import { RegulationMinistryList } from '@island.is/regulations/web'
 import { startOfDay } from 'date-fns/esm'
 import { useEffect, useRef, useState } from 'react'
-import { Kennitala } from './types'
 import {
   DraftSummary,
   ShippedSummary,
   RegulationDraft,
-  RegulationOption,
   RegulationList,
   EmailAddress,
   Author,
-} from './types-api'
-import {
-  DBx_Ministry,
-  DraftAuthorId,
   RegulationDraftId,
-  MinistryId,
-  RegulationId,
-  AuthorId,
-} from './types-database'
+} from '@island.is/regulations/admin'
 // import { } from './utils'
 
 export const useMockQuery = <T>(data: T, skip?: boolean) => {
@@ -50,14 +48,12 @@ export const useMockQuery = <T>(data: T, skip?: boolean) => {
 
 export const mockAuthors: ReadonlyArray<Author> = [
   {
-    authorId: 1 as AuthorId,
+    authorId: '1234567809' as Kennitala,
     name: 'Már Örlygsson',
-    email: 'mar@hugsmidjan.is' as EmailAddress,
   },
   {
-    authorId: 2 as AuthorId,
+    authorId: '6543217809' as Kennitala,
     name: 'Valur Sverrisson',
-    email: 'valur@hugsmidjan.is' as EmailAddress,
   },
 ]
 
@@ -77,7 +73,7 @@ const dateFromNow = (n: number) => toISODate(startOfDay(Date.now() + n * DAY))
 
 export const mockDraftlist: ReadonlyArray<DraftSummary> = [
   {
-    id: 234 as RegulationDraftId,
+    id: 'ac819ffd-4dff-4e9d-91ef-c19601794bf0' as RegulationDraftId,
     title:
       'Reglugerð um breytingar á Reglugerð nr 123/2001 um Lorem ipsum dolor sit',
     draftingStatus: 'draft',
@@ -85,21 +81,21 @@ export const mockDraftlist: ReadonlyArray<DraftSummary> = [
     authors: mockAuthors.slice(0, 1),
   },
   {
-    id: 345 as RegulationDraftId,
+    id: 'fd17c9ae-7045-4d0c-ab04-fc36e18771d8' as RegulationDraftId,
     title: 'Reglugerð um amet dolore ipsum',
     draftingStatus: 'proposal',
     idealPublishDate: dateFromNow(3),
     authors: mockAuthors.slice(1, 2),
   },
   {
-    id: 123 as RegulationDraftId,
+    id: '778f5cee-6c18-4543-968e-4735df7537f3' as RegulationDraftId,
     title: 'Reglugerð um ritstjórn reglugerða',
     draftingStatus: 'proposal',
     idealPublishDate: undefined,
     authors: mockAuthors.slice(0, 2),
   },
   {
-    id: 456 as RegulationDraftId,
+    id: '55bf452a-51d1-4ca7-8880-6cbb2fd36090' as RegulationDraftId,
     title: 'Reglugerð um lorem ipsum dolor sit',
     draftingStatus: 'draft',
     idealPublishDate: undefined,
@@ -109,17 +105,15 @@ export const mockDraftlist: ReadonlyArray<DraftSummary> = [
 
 // ---------------------------------------------------------------------------
 
-export const mockMinistrylist: ReadonlyArray<DBx_Ministry> = [
+export const mockMinistrylist: RegulationMinistryList = [
   {
-    id: 1234 as MinistryId,
     name: 'Forsætisráðuneyti',
-    slug: 'fsr',
+    slug: 'fsr' as MinistrySlug,
     current: true,
   },
   {
-    id: 4321 as MinistryId,
     name: 'Samgöngu- og sveitarstjórnarráðuneyti',
-    slug: 'ssvrn',
+    slug: 'ssvrn' as MinistrySlug,
     current: false,
   },
 ]
@@ -128,7 +122,7 @@ export const mockMinistrylist: ReadonlyArray<DBx_Ministry> = [
 
 export const mockShippedList: ReadonlyArray<ShippedSummary> = [
   {
-    id: 456 as RegulationDraftId,
+    id: '89be6f2c-7ae7-4e91-89c2-8adecdeb0e24' as RegulationDraftId,
     name: '1711/2021' as RegName,
     title: 'Reglugerð um komudaga jólasveinana á hlaupári',
     idealPublishDate: dateFromNow(1),
@@ -137,23 +131,12 @@ export const mockShippedList: ReadonlyArray<ShippedSummary> = [
 
 // ---------------------------------------------------------------------------
 
-export const mockMinistries: ReadonlyArray<RegulationDraft['ministry']> = [
-  {
-    id: 9876 as MinistryId,
-    name: 'Samgöngu- og sveitarstjórnarráðuneyti',
-    slug: 'ssvrn',
-    current: false,
-  },
-]
-
-// ---------------------------------------------------------------------------
-
 export const mockDraftRegulations: Record<
-  number,
+  string,
   RegulationDraft | undefined
 > = {
   '123': {
-    id: 123 as RegulationDraftId,
+    id: '488c2557-4141-4bb5-82b0-4703851a3620' as RegulationDraftId,
     draftingStatus: 'proposal',
     draftingNotes: '<p>Fór í banka.</p>' as HTMLText,
     authors: mockAuthors,
@@ -176,7 +159,7 @@ export const mockDraftRegulations: Record<
       },
     ],
     comments: '' as HTMLText,
-    ministry: mockMinistries[0],
+    ministry: mockMinistrylist[0],
     lawChapters: [],
     impacts: [],
   },
@@ -186,20 +169,17 @@ export const mockDraftRegulations: Record<
 
 export const mockRegulationOptions: RegulationList = [
   {
-    id: 3456 as RegulationId,
     name: '0244/2021' as RegName,
     title: 'Reglugerð fyrir hafnir Hafnasjóðs Dalvíkurbyggðar.',
     migrated: true,
   },
   {
-    id: 6543 as RegulationId,
     name: '0245/2021' as RegName,
     title: 'Reglugerð um (1.) breytingu á reglugerð nr. 101/2021.',
     cancelled: true,
     migrated: true,
   },
   {
-    id: 17543 as RegulationId,
     name: '0001/1975' as RegName,
     title: 'Reglugerð um eitthvað gamalt og gott.',
     migrated: false,

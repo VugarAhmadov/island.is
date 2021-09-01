@@ -1,17 +1,27 @@
 import { Inject } from '@nestjs/common'
 import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest'
 import { DataSourceConfig } from 'apollo-datasource'
-import { ISODate, RegQueryName, Year } from '@island.is/regulations'
+import {
+  ISODate,
+  LawChapterSlug,
+  MinistrySlug,
+  RegQueryName,
+  Year,
+} from '@island.is/regulations'
 import {
   Regulation,
+  RegulationLawChapter,
   RegulationLawChapterTree,
   RegulationListItem,
   RegulationMinistryList,
+  RegulationOriginalDates,
   RegulationRedirect,
   RegulationSearchResults,
   RegulationViewTypes,
   RegulationYears,
 } from '@island.is/regulations/web'
+import pickBy from 'lodash/pickBy'
+import identity from 'lodash/identity'
 
 export const REGULATIONS_OPTIONS = 'REGULATIONS_OPTIONS'
 
@@ -47,8 +57,13 @@ export class RegulationsService extends RESTDataSource {
     name: RegQueryName,
     date?: ISODate,
     isCustomDiff?: boolean,
-    earlierDate?: ISODate | 'original',
+    _earlierDate?: ISODate | RegulationOriginalDates.gqlHack,
   ): Promise<Regulation | RegulationRedirect | null> {
+    const earlierDate =
+      _earlierDate === RegulationOriginalDates.gqlHack
+        ? RegulationOriginalDates.api
+        : _earlierDate
+
     let params: string = viewType
 
     if (viewType === 'd') {
@@ -93,10 +108,15 @@ export class RegulationsService extends RESTDataSource {
     year?: Year,
     yearTo?: Year,
     ch?: string,
+    iA?: boolean,
+    iR?: boolean,
+    page?: number,
   ): Promise<RegulationListItem[] | null> {
     const response = await this.get<RegulationListItem[] | null>(
       `search`,
-      { q, rn, year, yearTo, ch },
+      // Strip away empty params
+      // Object.fromEntries(Object.entries({ q, rn, year, yearTo, ch, iA, iR, page }).filter((val) => val))
+      pickBy({ q, rn, year, yearTo, ch, iA, iR, page }, identity),
       {
         cacheOptions: { ttl: this.options.ttl ?? 600 }, // defaults to 10 minutes
       },
@@ -111,9 +131,11 @@ export class RegulationsService extends RESTDataSource {
     return response
   }
 
-  async getRegulationsMinistries(): Promise<RegulationMinistryList | null> {
+  async getRegulationsMinistries(
+    slugs?: Array<MinistrySlug>,
+  ): Promise<RegulationMinistryList | null> {
     const response = await this.get<RegulationMinistryList | null>(
-      `ministries`,
+      `ministries${slugs ? '?slugs=' + slugs.join(',') : ''}`,
       {
         cacheOptions: { ttl: this.options.ttl ?? 600 }, // defaults to 10 minutes
       },
@@ -123,9 +145,14 @@ export class RegulationsService extends RESTDataSource {
 
   async getRegulationsLawChapters(
     tree: boolean,
-  ): Promise<RegulationLawChapterTree | null> {
-    const response = await this.get<RegulationLawChapterTree | null>(
-      `lawchapters${tree ? '/tree' : ''}`,
+    slugs?: Array<LawChapterSlug>,
+  ): Promise<RegulationLawChapterTree | RegulationLawChapter[] | null> {
+    const response = await this.get<
+      RegulationLawChapterTree | RegulationLawChapter[] | null
+    >(
+      `lawchapters${tree ? '/tree' : ''}${
+        slugs ? '?slugs=' + slugs.join(',') : ''
+      }`,
       {
         cacheOptions: { ttl: this.options.ttl ?? 600 }, // defaults to 10 minutes
       },

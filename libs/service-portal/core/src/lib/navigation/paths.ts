@@ -37,6 +37,7 @@ export enum ServicePortalPath {
   FinanceStatus = '/fjarmal/stada',
   FinanceTransactions = '/fjarmal/faerslur',
   FinanceEmployeeClaims = '/fjarmal/laungreidendakrofur',
+  FinanceLocalTax = '/fjarmal/utsvar',
   FinanceBills = '/fjarmal/greidslusedlar-og-greidslukvittanir',
   FinanceVehicles = 'https://mitt.samgongustofa.is/',
   FinancePayments = '/greidslur',
@@ -95,6 +96,6 @@ export enum ServicePortalPath {
   // DocumentProviderStatistics = '/skjalaveita/tolfraedi',
 
   RegulationsAdminRoot = '/reglugerdir-admin',
-  RegulationsAdminEdit = '/reglugerdir-admin/edit/:id(new|\\d+)/:step?',
+  RegulationsAdminEdit = '/reglugerdir-admin/edit/:id(new|.{36})/:step?',
   RegulationsAdminMinistries = '/reglugerdir-admin/raduneyti',
 }

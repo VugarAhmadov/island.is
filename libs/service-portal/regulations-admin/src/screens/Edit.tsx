@@ -1,9 +1,10 @@
-import React, { FC, Fragment } from 'react'
+import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { Box, SkeletonLoader, Text } from '@island.is/island-ui/core'
 import { useLocale, useNamespaces } from '@island.is/localization'
-import { RegulationDraftId } from '../types-database'
+import { RegulationDraftId } from '@island.is/regulations/admin'
+import { isUuid } from 'uuidv4'
 import { EditBasics } from '../components/EditBasics'
 import { EditMeta } from '../components/EditMeta'
 import { editorMsgs } from '../messages'
@@ -11,10 +12,10 @@ import { Step } from '../types'
 import { ButtonBar } from '../components/ButtonBar'
 import {
   useDraftingState,
-  DraftIdFromParam,
   steps,
-  RegDraftForm,
+  StepComponent,
 } from '../state/useDraftingState'
+import { DraftIdFromParam } from '../state/types'
 import { MessageDescriptor } from 'react-intl'
 // import { gql, useQuery } from '@apollo/client'
 // import { Query } from '@island.is/api/schema'
@@ -29,11 +30,6 @@ import { MessageDescriptor } from 'react-intl'
 //     }
 //   }
 // `
-
-export type StepComponent = (props: {
-  draft: RegDraftForm
-  new?: boolean
-}) => ReturnType<FC>
 
 const stepData: Record<
   Step,
@@ -76,9 +72,9 @@ const assertDraftId = (maybeId: string): DraftIdFromParam => {
   if (maybeId === 'new') {
     return maybeId
   }
-  const id = parseInt(maybeId)
-  if (id > 0) {
-    return id as RegulationDraftId
+
+  if (isUuid(maybeId)) {
+    return maybeId as RegulationDraftId
   }
   throw new Error('Invalid RegulationDraft editing Id')
 }
@@ -115,12 +111,12 @@ const Edit = () => {
       </Box>
 
       {draft ? (
-        <step.Component new={id === 'new'} draft={draft} />
+        <step.Component actions={actions} new={id === 'new'} draft={draft} />
       ) : (
         <SkeletonLoader height={120} />
       )}
 
-      <ButtonBar stepNav={stepNav} actions={actions} />
+      <ButtonBar id={id} stepNav={stepNav} actions={actions} />
     </Fragment>
   )
 }
