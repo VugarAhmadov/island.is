@@ -19,7 +19,7 @@ import { Client } from './client.model'
     },
   ],
 })
-export class ClientRedirectUri extends Model<ClientRedirectUri> {
+export class ClientRedirectUri extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

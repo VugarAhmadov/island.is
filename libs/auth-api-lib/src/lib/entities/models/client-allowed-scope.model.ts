@@ -19,7 +19,7 @@ import { Client } from './client.model'
     },
   ],
 })
-export class ClientAllowedScope extends Model<ClientAllowedScope> {
+export class ClientAllowedScope extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

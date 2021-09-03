@@ -20,7 +20,7 @@ import { GrantType } from './grant-type.model'
     },
   ],
 })
-export class ClientGrantType extends Model<ClientGrantType> {
+export class ClientGrantType extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

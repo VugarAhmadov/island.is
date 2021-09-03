@@ -19,7 +19,7 @@ import { ApiScopeGroup } from './api-scope-group.model'
     },
   ],
 })
-export class Domain extends Model<Domain> {
+export class Domain extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

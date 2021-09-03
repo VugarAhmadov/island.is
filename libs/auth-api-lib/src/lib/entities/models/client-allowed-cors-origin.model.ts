@@ -19,7 +19,7 @@ import { Client } from './client.model'
     },
   ],
 })
-export class ClientAllowedCorsOrigin extends Model<ClientAllowedCorsOrigin> {
+export class ClientAllowedCorsOrigin extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

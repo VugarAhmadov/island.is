@@ -19,7 +19,7 @@ import { ApiResource } from './api-resource.model'
     },
   ],
 })
-export class ApiResourceUserClaim extends Model<ApiResourceUserClaim> {
+export class ApiResourceUserClaim extends Model {
   @PrimaryKey
   @Column({
     type: DataType.UUID,

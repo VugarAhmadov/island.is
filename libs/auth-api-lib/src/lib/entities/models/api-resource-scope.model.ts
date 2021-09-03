@@ -19,7 +19,7 @@ import { ApiResource } from './api-resource.model'
     },
   ],
 })
-export class ApiResourceScope extends Model<ApiResourceScope> {
+export class ApiResourceScope extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

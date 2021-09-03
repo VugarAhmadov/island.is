@@ -19,7 +19,7 @@ import { Client } from './client.model'
     },
   ],
 })
-export class ClientIdpRestrictions extends Model<ClientIdpRestrictions> {
+export class ClientIdpRestrictions extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

@@ -19,7 +19,7 @@ import { Client } from './client.model'
     },
   ],
 })
-export class ClientClaim extends Model<ClientClaim> {
+export class ClientClaim extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

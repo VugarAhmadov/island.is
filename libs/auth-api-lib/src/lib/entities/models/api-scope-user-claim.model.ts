@@ -19,7 +19,7 @@ import { ApiScope } from './api-scope.model'
     },
   ],
 })
-export class ApiScopeUserClaim extends Model<ApiScopeUserClaim> {
+export class ApiScopeUserClaim extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

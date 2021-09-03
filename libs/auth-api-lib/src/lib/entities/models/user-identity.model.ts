@@ -19,7 +19,7 @@ import { Claim } from './claim.model'
     },
   ],
 })
-export class UserIdentity extends Model<UserIdentity> {
+export class UserIdentity extends Model {
   @PrimaryKey
   @Column({
     type: DataType.STRING,

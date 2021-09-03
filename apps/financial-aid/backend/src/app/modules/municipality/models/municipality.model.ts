@@ -21,7 +21,7 @@ import type { MunicipalitySettings } from '@island.is/financial-aid/shared/lib'
 @Table
 
 //TODO
-export class MunicipalityModel extends Model<Municipality> {
+export class MunicipalityModel extends Model {
   @Column({
     type: DataType.UUID,
     primaryKey: true,

@@ -33,7 +33,7 @@ import { User } from '../../user'
   tableName: 'case',
   timestamps: true,
 })
-export class Case extends Model<Case> {
+export class Case extends Model {
   /**********
    * A surrogate key assigned by the database
    **********/

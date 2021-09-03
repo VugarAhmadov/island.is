@@ -2,6 +2,7 @@
 
 export type ResponsiveProp<AtomName> =
   | AtomName
+  | Readonly<[AtomName]>
   | Readonly<[AtomName, AtomName]>
   | Readonly<[AtomName, AtomName, AtomName]>
   | Readonly<[AtomName, AtomName, AtomName, AtomName]>
@@ -14,8 +15,13 @@ export const normaliseResponsiveProp = <Keys extends string | number>(
     return [value, value, value, value, value]
   }
 
-  if ('length' in value) {
+  if (Array.isArray(value)) {
     const { length } = value
+
+    if (length === 1) {
+      const [xsValue] = value
+      return [xsValue, xsValue, xsValue, xsValue, xsValue]
+    }
 
     if (length === 2) {
       const [xsValue, smValue] = value
@@ -46,11 +52,6 @@ export const normaliseResponsiveProp = <Keys extends string | number>(
 
     if (length === 5) {
       return value as Readonly<[Keys, Keys, Keys, Keys, Keys]>
-    }
-
-    if (length === 1) {
-      const [xsValue] = value
-      return [xsValue, xsValue, xsValue, xsValue, xsValue]
     }
 
     throw new Error(`Invalid responsive prop length: ${JSON.stringify(value)}`)
