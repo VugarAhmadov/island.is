@@ -7,8 +7,8 @@ import {
 } from '@island.is/application/core'
 import { application, section } from '../lib/messages'
 
-export const PaymentPlanSubmittedForm: Form = buildForm({
-  id: 'PaymentPlanSubmittedForm',
+export const Overview: Form = buildForm({
+  id: 'Overview',
   title: application.name,
   mode: FormModes.APPROVED,
   children: [
@@ -18,7 +18,7 @@ export const PaymentPlanSubmittedForm: Form = buildForm({
       children: [
         buildCustomField({
           id: 'confirmationCustomField',
-          title: application.name,
+          title: 'Hey hoooo',
           component: 'SubmittedOverviewPreview',
         }),
       ],

@@ -11,12 +11,14 @@ import {
   buildMultiField,
   buildRadioField,
   buildSection,
+  buildSubmitField,
   buildTextField,
   CustomField,
+  DefaultEvents,
   Form,
   FormModes,
 } from '@island.is/application/core'
-import { application, employer, info, section } from '../lib/messages'
+import { application, employer, info, overview, section } from '../lib/messages'
 import { externalData } from '../lib/messages/externalData'
 import { paymentPlan } from '../lib/messages/paymentPlan'
 import { prerequisitesFailed } from '../lib/paymentPlanUtils'
@@ -289,6 +291,18 @@ export const PaymentPlanForm: Form = buildForm({
               id: 'overviewScreen',
               title: '',
               component: 'Overview',
+            }),
+            buildSubmitField({
+              id: 'overview.submit',
+              title: '',
+              refetchApplicationAfterSubmit: true,
+              actions: [
+                {
+                  event: DefaultEvents.SUBMIT,
+                  name: overview.submitButton,
+                  type: 'primary',
+                },
+              ],
             }),
           ],
         }),

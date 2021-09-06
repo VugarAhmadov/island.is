@@ -6,6 +6,7 @@ import { FieldBaseProps } from '@island.is/application/core'
 import { AccordionItem, Box, Text } from '@island.is/island-ui/core'
 import { useLocale } from '@island.is/localization'
 import { RadioController } from '@island.is/shared/form-fields'
+import set from 'lodash/set'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import HtmlParser from 'react-html-parser'
@@ -121,6 +122,11 @@ export const PaymentPlan = ({ application, field }: FieldBaseProps) => {
         .then((response) => {
           setDistributionData(response?.paymentScheduleDistribution || null)
           setIsLoading(false)
+          set(
+            answers,
+            `${entry}.distribution`,
+            response?.paymentScheduleDistribution || null,
+          )
         })
         .catch((error) => {
           console.error(
@@ -136,6 +142,8 @@ export const PaymentPlan = ({ application, field }: FieldBaseProps) => {
     payment,
     paymentMode,
     initialMinMaxData,
+    answers,
+    entry,
   ])
 
   const handleSelectPaymentMode = (mode: any) => {

@@ -1,9 +1,11 @@
-import { dedent } from 'ts-dedent'
-import { EmailTemplateGeneratorProps } from '../../../../types'
-import { overviewTemplate } from './overviewTemplate'
+import { PublicDebtPaymentPlanAnswers } from '@island.is/application/templates/public-debt-payment-plan'
 import { SendMailOptions } from 'nodemailer'
 import { Attachment } from 'nodemailer/lib/mailer'
-import { AccidentNotificationAnswers } from '@island.is/application/templates/accident-notification'
+import {
+  AssignmentEmailTemplateGenerator,
+  EmailTemplateGeneratorProps,
+} from '../../../../types'
+import { pathToAsset } from '../public-debt-payment-plan.utils'
 
 interface ConfirmationEmail {
   (
@@ -14,49 +16,60 @@ interface ConfirmationEmail {
   ): SendMailOptions
 }
 
-export const generateConfirmationEmail: ConfirmationEmail = (
+export const generateConfirmationEmail: AssignmentEmailTemplateGenerator = (
   props,
-  applicationSenderName,
-  applicationSenderEmail,
-  attachments,
+  assignLink,
 ) => {
   const {
     application,
-    options: { locale },
+    options: { email },
   } = props
 
-  const answers = application.answers as AccidentNotificationAnswers
+  const answers = application.answers as PublicDebtPaymentPlanAnswers
   const applicant = {
     name: answers.applicant.name,
     address: answers.applicant.email,
   }
 
-  const subject = `Tilkynning um slys hefur verið móttekin.`
-  const overview = overviewTemplate(application)
-
-  // TODO: Translations?
-  const body = dedent(`
-    <h2>Tilkynning móttekin</h2>
-    <p>
-      Takk fyrir að tilkynna slys. Sjúkratryggingar Íslands verður í sambandi við þig ef frekari upplýsingar vantar.
-      Ef þú vilt hafa samband getur þú sent tölvupóst á netfangið <a href="mailto:info@sjukra.is">info@sjukra.is</a>
-    </p>
-    <p>
-      Þú getur fylgst með stöðu mála á
-      <a href="https://island.is/umsoknir/tilkynning-um-slys">https://island.is/umsoknir/tilkynning-um-slys</a>
-    </p> </br>
-    ${overview}
-`)
+  const subject = `Þér hefur borist yfirlit um greiðsluáætlun`
 
   return {
     from: {
-      name: applicationSenderName,
-      address: applicationSenderEmail,
+      name: email.sender,
+      address: email.address,
     },
     to: applicant,
-    cc: undefined,
-    attachments,
     subject,
-    html: body,
+    template: {
+      title: subject,
+      body: [
+        {
+          component: 'Image',
+          context: {
+            src: pathToAsset('notification.jpg'),
+            alt: 'Fá skilaboð myndskreyting',
+          },
+        },
+        {
+          component: 'Heading',
+          context: {
+            copy: subject,
+          },
+        },
+        {
+          component: 'Copy',
+          context: {
+            copy: 'Texti',
+          },
+        },
+        {
+          component: 'Button',
+          context: {
+            copy: 'Opna yfirlit',
+            href: assignLink,
+          },
+        },
+      ],
+    },
   }
 }

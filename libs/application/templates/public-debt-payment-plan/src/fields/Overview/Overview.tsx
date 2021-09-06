@@ -19,6 +19,7 @@ import {
 import { DistributionTable } from './DistributionTabel'
 
 export const Overview = ({ application, goToScreen }: FieldBaseProps) => {
+  console.log(application)
   const { formatMessage } = useLocale()
 
   const externalData = application.externalData as PaymentPlanExternalData

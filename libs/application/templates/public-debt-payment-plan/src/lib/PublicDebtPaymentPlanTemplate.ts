@@ -15,14 +15,17 @@ import { application } from './messages'
 const States = {
   draft: 'draft',
   submitted: 'submitted',
+  overview: 'overview',
 }
 
 type PublicDebtPaymentPlanEvent =
   | { type: DefaultEvents.APPROVE }
   | { type: DefaultEvents.SUBMIT }
+  | { type: DefaultEvents.ASSIGN }
 
 enum Roles {
   APPLICANT = 'applicant',
+  ASSIGNEE = 'assignee',
 }
 
 const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
@@ -89,17 +92,56 @@ const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
           onEntry: {
             apiModuleAction: ApiActions.submitApplication,
           },
-          /* roles: [
+          roles: [
             {
               id: Roles.APPLICANT,
               formLoader: () =>
-                import('../forms/PaymentPlanSubmittedForm').then((module) =>
-                  // TODO: Rename this once we start work on it
-                  Promise.resolve(module.PaymentPlanSubmittedForm),
-                ),
+                import('../forms/PaymentPlanSubmittedForm').then((module) => {
+                  return Promise.resolve(module.PaymentPlanSubmittedForm)
+                }),
               write: 'all',
             },
-          ], */
+          ],
+        },
+        on: {
+          [DefaultEvents.ASSIGN]: {
+            target: States.overview,
+          },
+        },
+      },
+      [States.overview]: {
+        meta: {
+          name: States.overview,
+          actionCard: {
+            title: application.name,
+            description: application.description,
+          },
+          progress: 1,
+          lifecycle: {
+            shouldBeListed: true,
+            shouldBePruned: true, // Only on dev
+            whenToPrune: 12 * 3600 * 1000,
+          },
+          roles: [
+            {
+              id: Roles.APPLICANT,
+              formLoader: () =>
+                import('../forms/PaymentPlanSubmittedForm').then((module) => {
+                  console.log('I am an applicant')
+                  return Promise.resolve(module.PaymentPlanSubmittedForm)
+                }),
+              write: 'all',
+            },
+            {
+              id: Roles.ASSIGNEE,
+              formLoader: () =>
+                import('../forms/Overview').then((module) => {
+                  console.log('I am an assignee')
+                  return Promise.resolve(module.Overview)
+                }),
+              write: 'all',
+            },
+          ],
         },
       },
     },
@@ -108,9 +150,19 @@ const PublicDebtPaymentPlanTemplate: ApplicationTemplate<
     id: string,
     application: Application,
   ): ApplicationRole | undefined {
+    // If the applicant is its own employer, we need to give it the `ASSIGNEE` role to be able to continue the process
+    if (id === application.applicant && application.assignees.includes(id)) {
+      return Roles.ASSIGNEE
+    }
+
     if (id === application.applicant) {
       return Roles.APPLICANT
     }
+
+    if (application.assignees.includes(id)) {
+      return Roles.ASSIGNEE
+    }
+
     return undefined
   },
 }
