@@ -26,6 +26,7 @@ const {
 module.exports = withTreat(
   withTM(
     withHealthcheckConfig({
+      webpack5: false,
       webpack: (config, { isServer }) => {
         if (!isServer) {
           config.resolve.alias['@sentry/node'] = '@sentry/browser'
