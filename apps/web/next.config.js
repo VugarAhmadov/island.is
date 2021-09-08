@@ -1,8 +1,8 @@
 const path = require('path')
-const withTreat = require('next-treat')()
+const withTreat = require('../../libs/shared/next-treat')()
 const withHealthcheckConfig = require('./next-modules/withHealthcheckConfig')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-const StatoscopeWebpackPlugin = require('@statoscope/ui-webpack')
+const StatoscopeWebpackPlugin = require('@statoscope/webpack-plugin').default
 const { DuplicatesPlugin } = require('inspectpack/plugin')
 
 // These modules need to be transpiled for IE11 support. This is not ideal,
@@ -26,7 +26,6 @@ const {
 module.exports = withTreat(
   withTM(
     withHealthcheckConfig({
-      webpack5: false,
       webpack: (config, { isServer }) => {
         if (!isServer) {
           config.resolve.alias['@sentry/node'] = '@sentry/browser'
@@ -67,7 +66,7 @@ module.exports = withTreat(
           'date-fns': path.resolve(modules, 'date-fns'),
           'es-abstract': path.resolve(modules, 'es-abstract'),
           'escape-string-regexp': path.resolve(modules, 'escape-string-regexp'),
-          'readable-stream': path.resolve(modules, 'readable-stream'),
+          //'readable-stream': path.resolve(modules, 'readable-stream'),
           'react-popper': path.resolve(modules, 'react-popper'),
           inherits: path.resolve(modules, 'inherits'),
           'graphql-tag': path.resolve(modules, 'graphql-tag'),

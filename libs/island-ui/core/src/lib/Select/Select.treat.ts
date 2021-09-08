@@ -2,7 +2,7 @@ import { style, globalStyle, styleMap, Style } from 'treat'
 import { theme, themeUtils } from '@island.is/island-ui/theme'
 import * as inputMixins from '../Input/Input.mixins'
 import merge from 'lodash/merge'
-import { StyleWithSelectors } from 'treat/lib/types/types'
+import { StyleWithSelectors } from 'treat/dist/declarations/src/types'
 
 /**
  * Media does not work under the selector key, this function moves the selector under the media key

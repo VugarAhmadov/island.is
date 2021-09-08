@@ -1,4 +1,4 @@
-const withTreat = require('next-treat')()
+const withTreat = require('../../libs/shared/next-treat')()
 
 const {
   API_URL = 'http://localhost:3333/api',
@@ -6,7 +6,6 @@ const {
 } = process.env
 
 module.exports = withTreat({
-  webpack5: false,
   webpack: (config, options) => {
     if (!options.isServer) {
       config.resolve.alias['@sentry/node'] = '@sentry/browser'

@@ -1,6 +1,5 @@
 import { style } from 'treat'
 import { theme } from '@island.is/island-ui/theme'
-
 const { color, spacing } = theme
 
 export const ball = style({

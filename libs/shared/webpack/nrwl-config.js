@@ -1,5 +1,5 @@
 const DefinePlugin = require('webpack/lib/DefinePlugin')
-const TreatPlugin = require('treat/webpack-plugin')
+const { TreatPlugin } = require('treat/webpack-plugin')
 const nrwlConfig = require('@nrwl/react/plugins/webpack.js')
 
 /**

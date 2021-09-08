@@ -109,6 +109,14 @@ export const theme = {
   },
 }
 
+interface ResponsiveStyle {
+  xs?: StyleWithoutMediaQueries
+  sm?: StyleWithoutMediaQueries
+  md?: StyleWithoutMediaQueries
+  lg?: StyleWithoutMediaQueries
+  xl?: StyleWithoutMediaQueries
+}
+
 export type Theme = typeof theme
 export type Colors = keyof typeof color
 
@@ -130,14 +138,6 @@ export const makeThemeUtils = (tokens: RequiredTokens) => {
     md: makeMediaQuery('md'),
     lg: makeMediaQuery('lg'),
     xl: makeMediaQuery('xl'),
-  }
-
-  interface ResponsiveStyle {
-    xs?: StyleWithoutMediaQueries
-    sm?: StyleWithoutMediaQueries
-    md?: StyleWithoutMediaQueries
-    lg?: StyleWithoutMediaQueries
-    xl?: StyleWithoutMediaQueries
   }
 
   const responsiveStyle = ({ xs, sm, md, lg, xl }: ResponsiveStyle): Style => {

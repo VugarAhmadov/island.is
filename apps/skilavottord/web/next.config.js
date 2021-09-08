@@ -1,4 +1,4 @@
-const withTreat = require('next-treat')()
+const withTreat = require('../../../libs/shared/next-treat')()
 const withHealthcheckConfig = require('./next-modules/withHealthcheckConfig')
 
 const {
@@ -13,7 +13,6 @@ const graphqlPath = '/graphql'
 
 module.exports = withTreat(
   withHealthcheckConfig({
-    webpack5: false,
     webpack: (config, options) => {
       if (!options.isServer) {
         config.resolve.alias['@sentry/node'] = '@sentry/browser'
