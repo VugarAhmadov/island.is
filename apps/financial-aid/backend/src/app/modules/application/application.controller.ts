@@ -114,10 +114,8 @@ export class ApplicationController {
     @Param('id') id: string,
     @Body() applicationToUpdate: UpdateApplicationDto,
   ): Promise<ApplicationModel> {
-    const {
-      numberOfAffectedRows,
-      updatedApplication,
-    } = await this.applicationService.update(id, applicationToUpdate)
+    const { numberOfAffectedRows, updatedApplication } =
+      await this.applicationService.update(id, applicationToUpdate)
 
     if (numberOfAffectedRows === 0) {
       throw new NotFoundException(`Application ${id} does not exist`)

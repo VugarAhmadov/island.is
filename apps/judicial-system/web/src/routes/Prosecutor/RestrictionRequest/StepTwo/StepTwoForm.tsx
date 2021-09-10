@@ -39,10 +39,8 @@ const StepTwoForm: React.FC<Props> = (props) => {
     transitionLoading,
   } = props
   const [arrestDateIsValid, setArrestDateIsValid] = useState(true)
-  const [
-    requestedCourtDateIsValid,
-    setRequestedCourtDateIsValid,
-  ] = useState<boolean>(workingCase.requestedCourtDate !== null)
+  const [requestedCourtDateIsValid, setRequestedCourtDateIsValid] =
+    useState<boolean>(workingCase.requestedCourtDate !== null)
 
   const { formatMessage } = useIntl()
   const { updateCase } = useCase()

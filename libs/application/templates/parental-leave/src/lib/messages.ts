@@ -1095,8 +1095,7 @@ export const parentalLeaveFormMessages: MessageDir = {
         'The other parent will need to approve the extra days you’ve requested.',
     },
     otherParentDescRequestingPersonalDiscount: {
-      id:
-        'pl.application:review.otherParent.otherParentDescRequestingPersonalDiscount',
+      id: 'pl.application:review.otherParent.otherParentDescRequestingPersonalDiscount',
       defaultMessage:
         'Hitt foreldrið þarf að samþykkja notkun persónuafsláttar síns.',
       description:

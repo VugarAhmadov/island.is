@@ -69,8 +69,8 @@ export class NotificationService {
     recipientAddress: string | undefined,
   ): Promise<boolean> {
     try {
-      const notifications: Notification[] = await this.notificationModel.findAll(
-        {
+      const notifications: Notification[] =
+        await this.notificationModel.findAll({
           where: {
             caseId,
             type: [
@@ -79,8 +79,7 @@ export class NotificationService {
               NotificationType.COURT_DATE,
             ],
           },
-        },
-      )
+        })
 
       return notifications.some((notification) => {
         if (!notification.recipients) {
@@ -559,9 +558,8 @@ export class NotificationService {
       }
     }
 
-    const recipients = await this.sendRulingEmailNotificationToProsecutorAndPrison(
-      existingCase,
-    )
+    const recipients =
+      await this.sendRulingEmailNotificationToProsecutorAndPrison(existingCase)
 
     return this.recordNotification(
       existingCase.id,
