@@ -9,5 +9,5 @@ module.exports = {
   setupFilesAfterEnv: ['./jest.setup.ts'],
   globals: { 'ts-jest': { tsconfig: '<rootDir>/tsconfig.spec.json' } },
   displayName: 'judicial-system-web',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
 }

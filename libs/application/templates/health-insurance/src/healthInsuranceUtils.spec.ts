@@ -26,9 +26,9 @@ describe('Health insurance utils', () => {
     applicationState = 'draft',
     id = faker.random.uuid(),
     externalData?: any,
-    createDate?: string,
+    createDate?: Date,
   ) =>
-    (({
+    ({
       id: id,
       state: applicationState,
       applicant: applicant.nationalId,
@@ -49,7 +49,7 @@ describe('Health insurance utils', () => {
         insuranceAdministration: undefinedExternalData,
         moreInfo: undefinedExternalData,
       },
-    } as unknown) as Application)
+    } as unknown as Application)
 
   describe('Check draft applications', () => {
     it('should return false if draft application list is undefined', () => {
@@ -249,7 +249,7 @@ describe('Health insurance utils', () => {
 
       // act
       const actualApplicationId = getOldestDraftApplicationId(
-        (applications as unknown) as Applications[],
+        applications as unknown as Applications[],
       )
 
       // assert

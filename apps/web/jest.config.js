@@ -8,5 +8,5 @@ module.exports = {
   coverageDirectory: '../../coverage/apps/web',
   globals: { 'ts-jest': { tsconfig: '<rootDir>/tsconfig.spec.json' } },
   displayName: 'web',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
 }
