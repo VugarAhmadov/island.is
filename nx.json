@@ -283,8 +283,8 @@
       "tags": []
     },
     "clients-auth-public-api": {
-      "implicitDependencies": ["services-auth-public-api"],
-      "tags": []
+      "tags": [],
+      "implicitDependencies": ["services-auth-public-api"]
     },
     "clients-document-provider": {
       "tags": []
