@@ -17,8 +17,10 @@ export class TokenGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest()
+    const authorization = request.headers['authorization'] as string
+    const auth = authorization.split(' ').pop()
 
-    if (`Bearer ${this.secretToken}` !== request.headers['authorization']) {
+    if (this.secretToken !== auth) {
       throw new UnauthorizedException('Unauthorized')
     }
 
