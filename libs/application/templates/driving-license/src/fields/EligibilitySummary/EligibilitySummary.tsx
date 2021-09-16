@@ -57,7 +57,7 @@ const EligibilitySummary: FC<FieldBaseProps> = ({ application }) => {
   } = application.externalData
   const { setValue } = useFormContext()
 
-  const eligibility = eligibilityData as unknown as ApplicationEligibility
+  const eligibility = (eligibilityData as unknown) as ApplicationEligibility
   const steps = extractReasons(eligibility)
 
   useEffect(() => {

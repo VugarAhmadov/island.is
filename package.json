@@ -390,7 +390,7 @@
     "mini-css-extract-plugin": "^2.1.0",
     "next-secure-headers": "2.1.0",
     "next-transpile-modules": "8.0.0",
-    "prettier": "2.3.2",
+    "prettier": "2.2.1",
     "quicktype": "15.0.258",
     "react-refresh": "^0.10.0",
     "sequelize-cli": "6.2.0",

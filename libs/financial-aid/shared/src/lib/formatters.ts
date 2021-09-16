@@ -70,14 +70,16 @@ export const getEventType: KeyMapping<
   },
 }
 
-export const getActiveSectionForTimeline: KeyMapping<ApplicationState, number> =
-  {
-    New: 0,
-    DataNeeded: 1,
-    InProgress: 1,
-    Rejected: 2,
-    Approved: 2,
-  }
+export const getActiveSectionForTimeline: KeyMapping<
+  ApplicationState,
+  number
+> = {
+  New: 0,
+  DataNeeded: 1,
+  InProgress: 1,
+  Rejected: 2,
+  Approved: 2,
+}
 
 export const getActiveTypeForStatus: KeyMapping<ApplicationState, string> = {
   New: 'InProgress',

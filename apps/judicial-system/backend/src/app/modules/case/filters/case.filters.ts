@@ -95,7 +95,7 @@ export function isCaseBlockedFromUser(
       theCase.courtId,
       user,
       forUpdate,
-      hasCaseBeenAppealed(theCase as unknown as TCase),
+      hasCaseBeenAppealed((theCase as unknown) as TCase),
     )
   )
 }
