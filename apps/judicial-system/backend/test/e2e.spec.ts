@@ -261,27 +261,27 @@ function getCaseData(
 }
 
 function institutionToTInstitution(institution: Institution) {
-  return ({
+  return {
     ...institution,
     created: institution.created && institution.created.toISOString(),
     modified: institution.modified && institution.modified.toISOString(),
-  } as unknown) as TInstitution
+  } as unknown as TInstitution
 }
 
 function userToCUser(user: User) {
-  return ({
+  return {
     ...user,
     created: user.created && user.created.toISOString(),
     modified: user.modified && user.modified.toISOString(),
     institution:
       user.institution && institutionToTInstitution(user.institution),
-  } as unknown) as CUser
+  } as unknown as CUser
 }
 
 function caseToCCase(dbCase: Case): CCase {
   const theCase = dbCase.toJSON() as Case
 
-  return ({
+  return {
     ...theCase,
     created: theCase.created && theCase.created.toISOString(),
     modified: theCase.modified && theCase.modified.toISOString(),
@@ -315,7 +315,7 @@ function caseToCCase(dbCase: Case): CCase {
     parentCase: theCase.parentCase
       ? caseToCCase(theCase.parentCase)
       : theCase.parentCase,
-  } as unknown) as CCase
+  } as unknown as CCase
 }
 
 function expectInstitutionsToMatch(
@@ -488,8 +488,8 @@ function expectCasesToMatch(caseOne: CCase, caseTwo: CCase) {
   }
 }
 
-function getCase(id: string): Case | PromiseLike<Case> {
-  return Case.findOne({
+async function getCase(id: string): Promise<Case> {
+  const ccase = await Case.findOne({
     where: { id },
     include: [
       {
@@ -514,6 +514,10 @@ function getCase(id: string): Case | PromiseLike<Case> {
       },
     ],
   })
+
+  if (!ccase) throw new Error(`Case ${id} not found in database`)
+
+  return ccase
 }
 
 describe('Institution', () => {
@@ -1031,10 +1035,10 @@ describe('Case', () => {
 function dbNotificationToNotification(dbNotification: Notification) {
   const notification = dbNotification.toJSON() as Notification
 
-  return ({
+  return {
     ...notification,
     created: notification.created && notification.created.toISOString(),
-  } as unknown) as Notification
+  } as unknown as Notification
 }
 
 describe('Notification', () => {
