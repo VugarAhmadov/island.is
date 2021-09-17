@@ -83,10 +83,11 @@ export class DrivingLicenseService {
   async getStudentInformation(
     nationalId: string,
   ): Promise<StudentInformation | null> {
-    const drivingLicense =
-      await this.drivingLicenseApi.apiOkuskirteiniKennitalaAllGet({
+    const drivingLicense = await this.drivingLicenseApi.apiOkuskirteiniKennitalaAllGet(
+      {
         kennitala: nationalId,
-      })
+      },
+    )
 
     const licenseWithName = drivingLicense.find(({ nafn }) => !!nafn)
 
@@ -100,8 +101,9 @@ export class DrivingLicenseService {
   }
 
   async getDeprivationTypes(): Promise<DeprevationType[]> {
-    const types =
-      await this.drivingLicenseApi.apiOkuskirteiniTegundirsviptingaGet({})
+    const types = await this.drivingLicenseApi.apiOkuskirteiniTegundirsviptingaGet(
+      {},
+    )
 
     return types.map(
       (type: TegSviptingaDto) =>
@@ -113,8 +115,9 @@ export class DrivingLicenseService {
   }
 
   async getDrivingLicenseTypes(): Promise<DrivingLicenseType[]> {
-    const types =
-      await this.drivingLicenseApi.apiOkuskirteiniTegundirrettindaGet({})
+    const types = await this.drivingLicenseApi.apiOkuskirteiniTegundirrettindaGet(
+      {},
+    )
 
     return types.map(
       (type: TegundRettindaDto) =>
@@ -126,8 +129,9 @@ export class DrivingLicenseService {
   }
 
   async getRemarkTypes(): Promise<RemarkType[]> {
-    const types =
-      await this.drivingLicenseApi.apiOkuskirteiniTegundirathugasemdaGet({})
+    const types = await this.drivingLicenseApi.apiOkuskirteiniTegundirathugasemdaGet(
+      {},
+    )
 
     return types.map(
       (type: TegundAthugasemdaDto) =>
@@ -145,10 +149,11 @@ export class DrivingLicenseService {
   async getPenaltyPointStatus(
     nationalId: User['nationalId'],
   ): Promise<PenaltyPointStatus> {
-    const status =
-      await this.drivingLicenseApi.apiOkuskirteiniPunktastadaKennitalaGet({
+    const status = await this.drivingLicenseApi.apiOkuskirteiniPunktastadaKennitalaGet(
+      {
         kennitala: nationalId,
-      })
+      },
+    )
 
     return {
       nationalId,
@@ -161,12 +166,11 @@ export class DrivingLicenseService {
   async getTeachingRights(
     nationalId: User['nationalId'],
   ): Promise<TeachingRightsStatus> {
-    const statusStr =
-      (await this.drivingLicenseApi.apiOkuskirteiniHasteachingrightsKennitalaGet(
-        {
-          kennitala: nationalId,
-        },
-      )) as unknown as string
+    const statusStr = ((await this.drivingLicenseApi.apiOkuskirteiniHasteachingrightsKennitalaGet(
+      {
+        kennitala: nationalId,
+      },
+    )) as unknown) as string
     // API says number, type says number, but deserialization happens with a text
     // deserializer (runtime.TextApiResponse).
     // Seems to be an outstanding bug? or I have no idea what I'm doing
@@ -213,18 +217,18 @@ export class DrivingLicenseService {
     type: DrivingLicenseType['id'],
   ): Promise<ApplicationEligibility> {
     const assessmentResult = await this.getDrivingAssessmentResult(nationalId)
-    const hasFinishedSchoolResult: HefurLokidOkugerdiDto =
-      await this.drivingLicenseApi.apiOkuskirteiniKennitalaFinishedokugerdiGet({
+    const hasFinishedSchoolResult: HefurLokidOkugerdiDto = await this.drivingLicenseApi.apiOkuskirteiniKennitalaFinishedokugerdiGet(
+      {
         kennitala: nationalId,
-      })
+      },
+    )
 
-    const canApplyResult =
-      (await this.drivingLicenseApi.apiOkuskirteiniKennitalaCanapplyforCategoryFullGet(
-        {
-          kennitala: nationalId,
-          category: type,
-        },
-      )) as unknown as string
+    const canApplyResult = ((await this.drivingLicenseApi.apiOkuskirteiniKennitalaCanapplyforCategoryFullGet(
+      {
+        kennitala: nationalId,
+        category: type,
+      },
+    )) as unknown) as string
 
     const requirements = [
       {
@@ -276,8 +280,8 @@ export class DrivingLicenseService {
     nationalId: User['nationalId'],
     input: NewDrivingLicenseInput,
   ): Promise<NewDrivingLicenseResult> {
-    const response: unknown =
-      await this.drivingLicenseApi.apiOkuskirteiniApplicationsNewCategoryPost({
+    const response: unknown = await this.drivingLicenseApi.apiOkuskirteiniApplicationsNewCategoryPost(
+      {
         category: DrivingLicenseCategory.B,
         postNewFinalLicense: {
           authorityNumber: input.juristictionId,
@@ -291,7 +295,8 @@ export class DrivingLicenseService {
           sendLicenseInMail: 0,
           sendToAddress: '',
         },
-      })
+      },
+    )
 
     // Service returns string on error, number on successful/not successful
     const responseIsString = typeof response === 'string'
@@ -311,10 +316,11 @@ export class DrivingLicenseService {
   async getQualityPhoto(
     nationalId: User['nationalId'],
   ): Promise<QualityPhotoResult> {
-    const result =
-      await this.drivingLicenseApi.apiOkuskirteiniKennitalaHasqualityphotoGet({
+    const result = await this.drivingLicenseApi.apiOkuskirteiniKennitalaHasqualityphotoGet(
+      {
         kennitala: nationalId,
-      })
+      },
+    )
     const image =
       result > 0
         ? await this.drivingLicenseApi.apiOkuskirteiniKennitalaGetqualityphotoGet(
