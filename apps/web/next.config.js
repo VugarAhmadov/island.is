@@ -66,7 +66,7 @@ module.exports = withTreat(
           'date-fns': path.resolve(modules, 'date-fns'),
           'es-abstract': path.resolve(modules, 'es-abstract'),
           'escape-string-regexp': path.resolve(modules, 'escape-string-regexp'),
-          //'readable-stream': path.resolve(modules, 'readable-stream'),
+          'readable-stream': path.resolve(modules, 'readable-stream'),
           'react-popper': path.resolve(modules, 'react-popper'),
           inherits: path.resolve(modules, 'inherits'),
           'graphql-tag': path.resolve(modules, 'graphql-tag'),
