@@ -20,7 +20,7 @@ const Header: React.FC = () => {
   const router = useRouter()
   const { isAuthenticated, setUser, user } = useContext(UserContext)
   const DynamicButton = dynamic(
-    import('../../../../../../libs/island-ui/core/src/lib/Button/Button').then(
+    import('@island.is/island-ui/core/lib/Button/Button').then(
       (mod) => mod.Button,
     ),
   ) as React.ForwardRefExoticComponent<
