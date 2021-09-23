@@ -1,8 +1,8 @@
 import { Box, Inline, Tag, Text } from '@island.is/island-ui/core'
-import { m } from '@island.is/service-portal/core'
 import { useLocale } from '@island.is/localization'
 import React, { FC } from 'react'
 import { MessageDescriptor } from 'react-intl'
+import { m } from '../../../lib/messages'
 import * as styles from './Card.treat'
 import WipCard from './WipCard'
 
