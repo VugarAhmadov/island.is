@@ -4,7 +4,7 @@ import { LoggingModule } from '@island.is/logging'
 
 @Module({
   controllers: [InfraController],
-  imports: [LoggingModule],
+  imports: [LoggingModule, ProblemModule],
 })
 export class InfraModule {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

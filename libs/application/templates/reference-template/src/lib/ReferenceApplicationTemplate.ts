@@ -152,10 +152,10 @@ const ReferenceApplicationTemplate: ApplicationTemplate<
           progress: 0.75,
           lifecycle: DefaultStateLifeCycle,
           onEntry: {
-            apiModuleAction: ApiActions.createApplication,
+            apiModuleAction: ApiActions.doStuffThatFails,
           },
           onExit: {
-            apiModuleAction: ApiActions.completeApplication,
+            apiModuleAction: ApiActions.doStuffThatFails,
           },
           roles: [
             {

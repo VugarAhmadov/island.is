@@ -92,6 +92,12 @@ function handleError(error: string, formatMessage: MessageFormatter): void {
   )
 }
 
+export function handleSubmitError(
+  error: string,
+  formatMessage: MessageFormatter,
+): void {
+  toast.error(formatMessage(coreMessages.updateOrSubmitError, { error }))
+}
 const Screen: FC<ScreenProps> = ({
   activeScreenIndex,
   addExternalData,
@@ -137,7 +143,7 @@ const Screen: FC<ScreenProps> = ({
   const [submitApplication, { loading: loadingSubmit }] = useMutation(
     SUBMIT_APPLICATION,
     {
-      onError: (e) => handleError(e.message, formatMessage),
+      onError: (e) => handleSubmitError(e.message, formatMessage),
     },
   )
   const { handleSubmit, errors, reset } = hookFormData
