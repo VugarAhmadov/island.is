@@ -1,4 +1,4 @@
-const withTreat = require('../../../libs/shared/next-treat')()
+const withTreat = require('./next-modules/next-treat')()
 const withHealthcheckConfig = require('./next-modules/withHealthcheckConfig')
 
 const { INTERNAL_API_URL = 'http://localhost:3333' } = process.env
