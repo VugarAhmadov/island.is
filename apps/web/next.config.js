@@ -1,5 +1,5 @@
 const path = require('path')
-const withTreat = require('../../libs/shared/next-treat')()
+const withTreat = require('./next-modules/next-treat')()
 const withHealthcheckConfig = require('./next-modules/withHealthcheckConfig')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const StatoscopeWebpackPlugin = require('@statoscope/webpack-plugin').default
