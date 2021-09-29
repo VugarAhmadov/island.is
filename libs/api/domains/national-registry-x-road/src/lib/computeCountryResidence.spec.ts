@@ -7,8 +7,7 @@ jest
 const d = new Date().getTime()
 
 // helper to return a date object with subtracted days from "today"
-const makeDate = (addDays: number): Date =>
-  new Date(d + (addDays * 86400 * 1000))
+const makeDate = (addDays: number): Date => new Date(d + addDays * 86400 * 1000)
 
 describe('computeCountryResidence()', () => {
   it('should work with a single entry older than a year', async () => {
@@ -30,7 +29,7 @@ describe('computeCountryResidence()', () => {
       {
         address: {},
         country: 'IS',
-        dateOfChange: makeDate(-200)
+        dateOfChange: makeDate(-200),
       },
     ])
 
@@ -44,7 +43,7 @@ describe('computeCountryResidence()', () => {
       {
         address: {},
         country: 'US',
-        dateOfChange: makeDate(-500)
+        dateOfChange: makeDate(-500),
       },
     ])
 
@@ -58,17 +57,17 @@ describe('computeCountryResidence()', () => {
       {
         address: {},
         country: 'IS',
-        dateOfChange: makeDate(-2)
+        dateOfChange: makeDate(-2),
       },
       {
         address: {},
         country: 'US',
-        dateOfChange: makeDate(-4)
+        dateOfChange: makeDate(-4),
       },
       {
         address: {},
         country: 'IS',
-        dateOfChange: makeDate(-6)
+        dateOfChange: makeDate(-6),
       },
     ])
 
@@ -83,12 +82,12 @@ describe('computeCountryResidence()', () => {
       {
         address: {},
         country: 'IS',
-        dateOfChange: makeDate(-1500)
+        dateOfChange: makeDate(-1500),
       },
       {
         address: {},
         country: 'US',
-        dateOfChange: makeDate(-100)
+        dateOfChange: makeDate(-100),
       },
     ])
 

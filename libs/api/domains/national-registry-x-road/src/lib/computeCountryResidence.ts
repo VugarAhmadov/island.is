@@ -7,7 +7,9 @@ import { NationalRegistryResidence } from '../models/nationalRegistryResidence.m
  * @param history list from national id registry of residences
  * @returns map of country code to days spent in country in the last 365 days
  */
-export const computeCountryResidence = (history: NationalRegistryResidence[]) => {
+export const computeCountryResidence = (
+  history: NationalRegistryResidence[],
+) => {
   if (history.length < 1) {
     return null
   }
