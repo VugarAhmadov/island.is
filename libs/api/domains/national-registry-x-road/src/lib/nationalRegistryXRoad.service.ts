@@ -12,7 +12,7 @@ import { LOGGER_PROVIDER } from '@island.is/logging'
 import { NationalRegistryResidenceHistory } from '../models/nationalRegistryResidenceHistory.model'
 import { NationalRegistryResidence } from '../models/nationalRegistryResidence.model'
 import { NationalRegistryAddress } from '../models/nationalRegistryAddress.model'
-import { computeCountryResidence } from './computeCountryResidence'
+import { computeCountryResidence } from './utils/computeCountryResidence'
 
 @Injectable()
 export class NationalRegistryXRoadService {
@@ -77,11 +77,18 @@ export class NationalRegistryXRoadService {
       } as NationalRegistryResidence
     })
 
-    computeCountryResidence(history)
+    const daysPerCountry = computeCountryResidence(history)
+    const countryResidenceDays = daysPerCountry
+      ? Object.entries(daysPerCountry).map(([countryCode, days]) => ({
+          countryCode,
+          days,
+        }))
+      : null
 
     return {
       nationalId,
       history,
+      countryResidenceDays,
     }
   }
 

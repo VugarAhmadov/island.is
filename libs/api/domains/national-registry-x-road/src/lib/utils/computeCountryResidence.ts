@@ -1,4 +1,5 @@
-import { NationalRegistryResidence } from '../models/nationalRegistryResidence.model'
+import { NationalRegistryResidence } from '../../models/nationalRegistryResidence.model'
+import { DAY } from './constants'
 
 /**
  * Compute a summary of how many days you've spent as a resident of each country in
@@ -42,11 +43,13 @@ export const computeCountryResidence = (
   let lastTime = now
   let i = 0
   let current = Number.MAX_SAFE_INTEGER
+
   const timeByCountry: Record<string, number> = {}
+
   while (current > yearFromNow && simplified[i]) {
     const { time, country } = simplified[i]
     current = Math.max(time, yearFromNow)
-    const period = Math.round((lastTime - current) / (86400 * 1000))
+    const period = Math.round((lastTime - current) / DAY)
     timeByCountry[country] = (timeByCountry[country] || 0) + period
     lastTime = current
     i++

@@ -1,4 +1,5 @@
 import { computeCountryResidence } from './computeCountryResidence'
+import { DAY } from './constants'
 
 jest
   .useFakeTimers('modern')
@@ -7,7 +8,7 @@ jest
 const d = new Date().getTime()
 
 // helper to return a date object with subtracted days from "today"
-const makeDate = (addDays: number): Date => new Date(d + addDays * 86400 * 1000)
+const makeDate = (addDays: number): Date => new Date(d + addDays * DAY)
 
 describe('computeCountryResidence()', () => {
   it('should work with a single entry older than a year', async () => {
