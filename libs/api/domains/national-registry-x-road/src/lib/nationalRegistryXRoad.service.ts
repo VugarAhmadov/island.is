@@ -3,11 +3,16 @@ import { ApolloError } from 'apollo-server-express'
 import {
   Einstaklingsupplysingar,
   Fjolskylda,
+  Heimili,
 } from '@island.is/clients/national-registry-v2'
 import type { NationalRegistryXRoadConfig } from './nationalRegistryXRoad.module'
 import { NationalRegistryPerson } from '../models/nationalRegistryPerson.model'
 import type { Logger } from '@island.is/logging'
 import { LOGGER_PROVIDER } from '@island.is/logging'
+import { NationalRegistryResidenceHistory } from '../models/nationalRegistryResidenceHistory.model'
+import { NationalRegistryResidence } from '../models/nationalRegistryResidence.model'
+import { NationalRegistryAddress } from '../models/nationalRegistryAddress.model'
+import { computeCountryResidence } from './computeCountryResidence'
 
 @Injectable()
 export class NationalRegistryXRoadService {
@@ -43,6 +48,40 @@ export class NationalRegistryXRoadService {
       ).then((res) => res.json())
     } catch (error) {
       throw this.handleError(error)
+    }
+  }
+
+  async getNationalRegistryResidenceHistory(
+    nationalId: string,
+    authToken: string,
+  ): Promise<NationalRegistryResidenceHistory> {
+    const historyList = await this.nationalRegistryFetch<Array<Heimili>>(
+      `/${nationalId}/buseta`,
+      authToken,
+    )
+
+    const history = historyList.map((heimili: Heimili) => {
+      // API says Date, but is string -- fallback in case that changes in the future
+      const date =
+        typeof heimili.breytt === 'string'
+          ? new Date(heimili.breytt)
+          : heimili.breytt
+      return {
+        address: {
+          city: heimili.stadur,
+          postalCode: heimili.postnumer,
+          streetName: heimili.heimilisfang,
+        } as NationalRegistryAddress,
+        country: heimili.landakodi,
+        dateOfChange: date,
+      } as NationalRegistryResidence
+    })
+
+    computeCountryResidence(history)
+
+    return {
+      nationalId,
+      history,
     }
   }
 
