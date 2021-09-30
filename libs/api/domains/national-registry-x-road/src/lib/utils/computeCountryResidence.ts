@@ -1,5 +1,9 @@
 import { NationalRegistryResidence } from '../../models/nationalRegistryResidence.model'
 import { DAY } from './constants'
+import differenceInDays from 'date-fns/differenceInCalendarDays'
+import addYears from 'date-fns/addYears'
+import compareAsc from 'date-fns/compareAsc'
+import compareDesc from 'date-fns/compareDesc'
 
 /**
  * Compute a summary of how many days you've spent as a resident of each country in
@@ -15,44 +19,24 @@ export const computeCountryResidence = (
     return null
   }
 
-  const simplified = history
-    .map(({ dateOfChange, country }) => ({
-      time: dateOfChange.getTime(),
-      country,
-    }))
-    .sort(({ time: a }, { time: b }) => {
-      // reversed order, make sure we get this right even if the national ID
-      // registry is out of order
-      return b - a
-    })
+  const sorted = history
+    .sort(({ dateOfChange: a }, { dateOfChange: b }) => compareDesc(new Date(a), new Date(b)))
 
-  const currentDateTime = new Date()
+  const yearAgo = addYears(new Date(), -1).getTime()
 
-  const now = new Date(
-    currentDateTime.getFullYear(),
-    currentDateTime.getMonth(),
-    currentDateTime.getDate(),
-  ).getTime()
-
-  const yearAgo = new Date(
-    currentDateTime.getFullYear() - 1,
-    currentDateTime.getMonth(),
-    currentDateTime.getDate(),
-  ).getTime()
-
-  let lastTime = now
-  let i = 0
-  let current = Number.MAX_SAFE_INTEGER
+  let lastTime = Date.now()
 
   const timeByCountry: Record<string, number> = {}
 
-  while (current > yearAgo && simplified[i]) {
-    const { time, country } = simplified[i]
-    current = Math.max(time, yearAgo)
+  // I realize this seems complicated, but there's a few edge cases as well.
+  // We have to account for history with a single entry within the last year,
+  // account for complicated residence histories overlapping the current year, etc
+  // Note: current > yearAgo check is not necessary.. it
+  for (const { dateOfChange, country } of sorted) {
+    const current = Math.max(dateOfChange.getTime(), yearAgo)
     const period = Math.round((lastTime - current) / DAY)
     timeByCountry[country] = (timeByCountry[country] || 0) + period
     lastTime = current
-    i++
   }
 
   return timeByCountry
