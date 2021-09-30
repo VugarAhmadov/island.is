@@ -16,9 +16,8 @@ export const computeCountryResidence = (
   }
 
   const simplified = history
-    .filter(({ dateOfChange }) => dateOfChange)
     .map(({ dateOfChange, country }) => ({
-      time: dateOfChange?.getTime(),
+      time: dateOfChange.getTime(),
       country,
     }))
     .sort(({ time: a }, { time: b }) => {

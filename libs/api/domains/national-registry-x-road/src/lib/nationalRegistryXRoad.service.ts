@@ -61,11 +61,12 @@ export class NationalRegistryXRoadService {
     )
 
     const history = historyList.map((heimili: Heimili) => {
-      // API says Date, but is string -- fallback in case that changes in the future
-      const date =
-        typeof heimili.breytt === 'string'
-          ? new Date(heimili.breytt)
-          : heimili.breytt
+      if (!heimili.breytt) {
+        throw new Error('All history entries have a modified date')
+      }
+
+      const date = new Date(heimili.breytt as unknown as string)
+
       return {
         address: {
           city: heimili.stadur,
