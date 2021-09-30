@@ -34,7 +34,7 @@ export const computeCountryResidence = (
     currentDateTime.getDate(),
   ).getTime()
 
-  const yearFromNow = new Date(
+  const yearAgo = new Date(
     currentDateTime.getFullYear() - 1,
     currentDateTime.getMonth(),
     currentDateTime.getDate(),
@@ -46,9 +46,9 @@ export const computeCountryResidence = (
 
   const timeByCountry: Record<string, number> = {}
 
-  while (current > yearFromNow && simplified[i]) {
+  while (current > yearAgo && simplified[i]) {
     const { time, country } = simplified[i]
-    current = Math.max(time, yearFromNow)
+    current = Math.max(time, yearAgo)
     const period = Math.round((lastTime - current) / DAY)
     timeByCountry[country] = (timeByCountry[country] || 0) + period
     lastTime = current

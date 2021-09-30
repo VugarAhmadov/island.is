@@ -11,5 +11,5 @@ export class NationalRegistryResidenceHistory {
   history!: NationalRegistryResidence[]
 
   @Field(() => [NationalRegistryCountryResidenceDays], { nullable: true })
-  countryResidenceDays!: NationalRegistryCountryResidenceDays[] | null
+  countryResidenceDays?: NationalRegistryCountryResidenceDays[] | null
 }

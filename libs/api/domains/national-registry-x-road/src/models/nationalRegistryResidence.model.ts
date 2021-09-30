@@ -10,5 +10,5 @@ export class NationalRegistryResidence {
   country!: string
 
   @Field(() => Date, { nullable: true })
-  dateOfChange!: Date
+  dateOfChange?: Date
 }
