@@ -150,8 +150,6 @@ export async function validateIncomingAnswers(
     }
   }
 
-  throw new ValidationProblem({ test: 'hello' })
-
   try {
     const errorMap = await helper.applyAnswerValidators(
       newAnswers,
@@ -164,6 +162,8 @@ export async function validateIncomingAnswers(
     logger.error('Failed to validate answers', error)
     throw error
   }
+
+  throw new Error('test error')
 
   return trimmedAnswers
 }

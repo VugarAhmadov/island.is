@@ -46,6 +46,11 @@ type RunServerOptions = {
   port?: number
 
   /**
+   * Disable new ProblemJSON response handling for backwards compatibility.
+   */
+  backwardsCompatibleErrorHandling?: boolean
+
+  /**
    * Hook up global interceptors to app
    */
   interceptors?: NestInterceptor[]
@@ -60,10 +65,15 @@ type RunServerOptions = {
 
 export const createApp = async ({
   stripNonClassValidatorInputs = true,
+  appModule,
+  backwardsCompatibleErrorHandling,
   ...options
 }: RunServerOptions) => {
   const app = await NestFactory.create<NestExpressApplication>(
-    InfraModule.forRoot(options.appModule),
+    InfraModule.forRoot({
+      appModule,
+      convertAllErrors: backwardsCompatibleErrorHandling !== true,
+    }),
     {
       logger: LoggingModule.createLogger(),
     },

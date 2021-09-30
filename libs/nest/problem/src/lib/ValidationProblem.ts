@@ -1,4 +1,4 @@
-import { Problem } from './Problem'
+import { ProblemError } from './ProblemError'
 
 type FieldValidationErrors = { [key: string]: string | FieldValidationErrors }
 
@@ -9,7 +9,7 @@ interface ValidationExtensions {
   fields: FieldValidationErrors
 }
 
-export class ValidationProblem extends Problem<ValidationExtensions> {
+export class ValidationProblem extends ProblemError<ValidationExtensions> {
   constructor(fields: FieldValidationErrors) {
     super({
       type: TYPE,

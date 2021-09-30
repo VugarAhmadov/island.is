@@ -1,4 +1,5 @@
 import { HttpException } from '@nestjs/common'
+import { Merge } from 'type-fest'
 
 type HttpExceptionResponse = string | { message: string; error?: string }
 
@@ -10,8 +11,11 @@ export interface ProblemDetails {
   instance?: string
 }
 
-export class Problem<ExtensionMembers = Record<string, never>> extends Error {
-  constructor(public problem: ProblemDetails & ExtensionMembers) {
+export type Problem<ExtensionMembers = unknown> = ProblemDetails &
+  ExtensionMembers
+
+export class ProblemError<ExtensionMembers = Record<string, never>> extends Error {
+  constructor(public problem: Problem<ExtensionMembers>) {
     super(
       problem.detail ? `${problem.title} - ${problem.detail}` : problem.title,
     )
@@ -36,7 +40,7 @@ export class Problem<ExtensionMembers = Record<string, never>> extends Error {
       detail = response.error ? response.message : undefined
     }
 
-    return new Problem({
+    return new ProblemError({
       status: status,
       type: `https://httpstatuses.com/${status}`,
       title,

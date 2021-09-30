@@ -16,6 +16,11 @@ export type TestServerOptions = {
   appModule: Type<any>
 
   /**
+   * Disable new ProblemJSON response handling for backwards compatibility.
+   */
+  backwardsCompatibleErrorHandling?: boolean
+
+  /**
    * Hook to override providers.
    */
   override?: (builder: TestingModuleBuilder) => void
@@ -23,7 +28,12 @@ export type TestServerOptions = {
 
 export const testServer = async (options: TestServerOptions) => {
   const builder = Test.createTestingModule({
-    imports: [InfraModule.forRoot(options.appModule)],
+    imports: [
+      InfraModule.forRoot({
+        appModule: options.appModule,
+        convertAllErrors: options.backwardsCompatibleErrorHandling !== true,
+      }),
+    ],
   })
   if (options.override) {
     options.override(builder)
@@ -43,7 +53,12 @@ export const testServerActivateAuthGuards = async (
   options: TestServerOptions,
 ) => {
   const moduleFixture = await Test.createTestingModule({
-    imports: [InfraModule.forRoot(options.appModule)],
+    imports: [
+      InfraModule.forRoot({
+        appModule: options.appModule,
+        convertAllErrors: options.backwardsCompatibleErrorHandling !== true,
+      }),
+    ],
   })
     .overrideGuard(IdsAuthGuard)
     .useValue({ canActivate: () => true })

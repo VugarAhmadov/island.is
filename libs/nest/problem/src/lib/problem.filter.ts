@@ -4,11 +4,11 @@ import {
   ArgumentsHost,
 } from '@nestjs/common'
 import { Response } from 'express'
-import { Problem } from './Problem'
+import { ProblemError } from './ProblemError'
 
-@Catch(Problem)
+@Catch(ProblemError)
 export class ProblemFilter implements ExceptionFilter {
-  catch(problem: Problem, host: ArgumentsHost) {
+  catch(problem: ProblemError, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
     console.log('HANDLING PROBLEM', problem)

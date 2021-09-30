@@ -20,20 +20,6 @@ import { ApplicationApplicationsInput } from './dto/applicationApplications.inpu
 import { GetPresignedUrlInput } from './dto/getPresignedUrl.input'
 import { ApplicationPayment } from './application.model'
 
-const handleError = async (error: any) => {
-  logger.error(JSON.stringify(error))
-
-  if (error.json) {
-    const json = await error.json()
-
-    logger.error(json)
-
-    throw new ApolloError(JSON.stringify(json), error.status)
-  }
-
-  throw new ApolloError('Failed to resolve request', error.status)
-}
-
 @Injectable()
 export class ApplicationService {
   constructor(
@@ -55,7 +41,6 @@ export class ApplicationService {
         id,
         locale,
       })
-      .catch(handleError)
   }
 
   async getPaymentStatus(
@@ -68,7 +53,6 @@ export class ApplicationService {
         applicationId,
         locale,
       })
-      .catch(handleError)
   }
 
   async createCharge(
@@ -82,7 +66,6 @@ export class ApplicationService {
         body: { chargeItemCode: chargeItemCode },
         authorization: auth.authorization,
       })
-      .catch(handleError)
   }
 
   async findAll(
@@ -97,7 +80,6 @@ export class ApplicationService {
         typeId: input?.typeId?.join(','),
         status: input?.status?.join(','),
       })
-      .catch(handleError)
   }
 
   async create(input: CreateApplicationInput, auth: Auth) {
@@ -105,7 +87,6 @@ export class ApplicationService {
       .applicationControllerCreate({
         createApplicationDto: input,
       })
-      .catch(handleError)
   }
 
   async update(input: UpdateApplicationInput, auth: Auth, locale: Locale) {
@@ -117,7 +98,6 @@ export class ApplicationService {
         updateApplicationDto,
         locale,
       })
-      .catch(handleError)
   }
 
   async addAttachment(input: AddAttachmentInput, auth: Auth) {
@@ -128,7 +108,6 @@ export class ApplicationService {
         id,
         addAttachmentDto,
       })
-      .catch(handleError)
   }
 
   async deleteAttachment(input: DeleteAttachmentInput, auth: Auth) {
@@ -139,7 +118,6 @@ export class ApplicationService {
         id,
         deleteAttachmentDto,
       })
-      .catch(handleError)
   }
 
   async updateExternalData(
@@ -155,7 +133,6 @@ export class ApplicationService {
         populateExternalDataDto,
         locale,
       })
-      .catch(handleError)
   }
 
   async submitApplication(input: SubmitApplicationInput, auth: Auth) {
@@ -165,7 +142,6 @@ export class ApplicationService {
         id,
         updateApplicationStateDto,
       })
-      .catch(handleError)
   }
 
   async assignApplication(input: AssignApplicationInput, auth: Auth) {
@@ -173,7 +149,6 @@ export class ApplicationService {
       .applicationControllerAssignApplication({
         assignApplicationDto: input,
       })
-      .catch(handleError)
   }
 
   async generatePdfPresignedUrl(input: GeneratePdfInput, auth: Auth) {
@@ -183,7 +158,6 @@ export class ApplicationService {
         id,
         generatePdfDto,
       })
-      .catch(handleError)
   }
 
   async requestFileSignature(input: RequestFileSignatureInput, auth: Auth) {
@@ -193,7 +167,6 @@ export class ApplicationService {
         id,
         requestFileSignatureDto,
       })
-      .catch(handleError)
   }
 
   async uploadSignedFile(input: UploadSignedFileInput, auth: Auth) {
@@ -203,7 +176,6 @@ export class ApplicationService {
         id,
         uploadSignedFileDto,
       })
-      .catch(handleError)
   }
 
   async presignedUrl(input: GetPresignedUrlInput, auth: Auth) {
@@ -214,6 +186,5 @@ export class ApplicationService {
         id,
         pdfType: type,
       })
-      .catch(handleError)
   }
 }

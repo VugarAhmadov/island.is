@@ -1,13 +1,13 @@
 import { BadRequestException, HttpException } from '@nestjs/common'
-import { Problem } from './Problem'
+import { ProblemError } from './ProblemError'
 
-describe('Problem', () => {
+describe('ProblemError', () => {
   it('supports basic problem details', () => {
     // Arrange
     const problem = { type: 'https://island.is', title: 'Test error' }
 
     // Act
-    const problemError = new Problem(problem)
+    const problemError = new ProblemError(problem)
 
     // Assert
     expect(problemError).toMatchObject({
@@ -27,7 +27,7 @@ describe('Problem', () => {
     }
 
     // Act
-    const problemError = new Problem(problem)
+    const problemError = new ProblemError(problem)
 
     // Assert
     expect(problemError).toMatchObject({
@@ -45,7 +45,7 @@ describe('Problem', () => {
     }
 
     // Act
-    const problemError = new Problem(problem)
+    const problemError = new ProblemError(problem)
 
     // Assert
     expect(problemError).toMatchObject({
@@ -59,7 +59,7 @@ describe('Problem', () => {
     const exception = new HttpException('Test', 500)
 
     // Act
-    const problemError = Problem.fromHttpException(exception)
+    const problemError = ProblemError.fromHttpException(exception)
 
     // Assert
     expect(problemError).toMatchObject({
@@ -77,7 +77,7 @@ describe('Problem', () => {
     const exception = new BadRequestException('This happened')
 
     // Act
-    const problemError = Problem.fromHttpException(exception)
+    const problemError = ProblemError.fromHttpException(exception)
 
     // Assert
     expect(problemError).toMatchObject({
