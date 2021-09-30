@@ -97,4 +97,34 @@ describe('computeCountryResidence()', () => {
       US: 100,
     })
   })
+
+  it('should work with dates even when they are returned out of order', async () => {
+    const report = computeCountryResidence([
+      {
+        address: {},
+        country: 'IS',
+        dateOfChange: makeDate(-1500),
+      },
+      {
+        address: {},
+        country: 'US',
+        dateOfChange: makeDate(-20),
+      },
+      {
+        address: {},
+        country: 'US',
+        dateOfChange: makeDate(-100),
+      },
+      {
+        address: {},
+        country: 'IS',
+        dateOfChange: makeDate(-300),
+      },
+    ])
+
+    expect(report).toMatchObject({
+      IS: 265,
+      US: 100,
+    })
+  })
 })
