@@ -1,8 +1,6 @@
 import { NationalRegistryResidence } from '../../models/nationalRegistryResidence.model'
 import { DAY } from './constants'
-import differenceInDays from 'date-fns/differenceInCalendarDays'
 import addYears from 'date-fns/addYears'
-import compareAsc from 'date-fns/compareAsc'
 import compareDesc from 'date-fns/compareDesc'
 
 /**
